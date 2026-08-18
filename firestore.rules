@@ -1,0 +1,48 @@
+rules_version = '2';
+
+// ============================================================================
+// Reglas de seguridad — Air Fryer Chef
+// ----------------------------------------------------------------------------
+// App personal de un único usuario. Reemplaza OWNER_UID_PLACEHOLDER por tu
+// UID real de Firebase Auth (Authentication → Users, tras tu primer login
+// con Google) y vuelve a desplegar las reglas:
+//
+//   firebase deploy --only firestore:rules
+//
+// Hasta que hagas ese reemplazo, NADIE puede leer ni escribir nada (más
+// seguro por defecto que dejarlo abierto mientras configuras).
+// ============================================================================
+
+function isOwner() {
+  return request.auth != null && request.auth.uid == 'OWNER_UID_PLACEHOLDER';
+}
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Catálogo (modelos de Air Fryer, alimentos): solo el propio dueño lee y
+    // escribe. Como es una app personal, no hay necesidad de exponerlo
+    // públicamente aunque el contenido en sí no sea sensible.
+    match /airFryerModels/{docId} {
+      allow read, write: if isOwner();
+    }
+    match /foods/{docId} {
+      allow read, write: if isOwner();
+    }
+    match /recipes/{docId} {
+      allow read, write: if isOwner();
+    }
+
+    // Todo lo del usuario (preferencias, despensa, recetario, notas,
+    // conversaciones, preferencias derivadas) vive bajo users/{uid}/** y solo
+    // es accesible por ese mismo uid — y solo si además coincide con el
+    // propietario configurado arriba.
+    match /users/{uid} {
+      allow read, write: if isOwner() && request.auth.uid == uid;
+
+      match /{document=**} {
+        allow read, write: if isOwner() && request.auth.uid == uid;
+      }
+    }
+  }
+}
