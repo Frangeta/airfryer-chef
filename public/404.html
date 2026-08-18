@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Air Fryer Chef</title>
+    <script>
+      // Parte 2 del truco spa-github-pages: GitHub Pages sirve este archivo
+      // para cualquier ruta que no exista como archivo real (p.ej.
+      // /recetas/abc123 tras una recarga). Lo redirigimos a la raíz
+      // codificando la ruta original en la query string; index.html la
+      // descodifica antes de montar React Router.
+      var segmentCount = 1; // 1 = repo project page (usuario.github.io/repo/...)
+      var l = window.location;
+      var path = l.pathname
+        .split('/')
+        .slice(0, 1 + segmentCount)
+        .join('/');
+      var rest = l.pathname.split('/').slice(1 + segmentCount).join('/');
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+          path + '/?/' + rest.replace(/&/g, '~and~') +
+          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash
+      );
+    </script>
+  </head>
+  <body></body>
+</html>
