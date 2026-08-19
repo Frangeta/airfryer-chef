@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
-import { auth, googleProvider, OWNER_UID } from './firebase';
+import { auth, googleProvider, OWNER_UIDS } from './firebase';
 import { ensureUserDoc } from '@/services/db';
 
 interface AuthState {
@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
-      if (u && OWNER_UID && u.uid === OWNER_UID) {
+      if (u && OWNER_UIDS.includes(u.uid)) {
         ensureUserDoc(u.uid, u.displayName ?? 'Chef').catch(console.error);
       }
     });
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signOut(auth);
   }
 
-  const isOwner = !!user && !!OWNER_UID && user.uid === OWNER_UID;
+  const isOwner = !!user && OWNER_UIDS.includes(user.uid);
 
   return <AuthContext.Provider value={{ user, loading, isOwner, login, logout }}>{children}</AuthContext.Provider>;
 }

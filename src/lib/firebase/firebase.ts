@@ -16,8 +16,11 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
-// Único usuario permitido. Se rellena en .env tras el primer login (ver
-// README). Todas las reglas de seguridad de Firestore Y el Worker de la IA
-// comprueban este mismo UID — así "el backend" sabe para qué usuario está
-// configurada la clave de Claude, sin que nadie más pueda usarla.
-export const OWNER_UID = import.meta.env.VITE_OWNER_UID as string;
+// Usuarios permitidos. VITE_OWNER_UID admite uno o varios UID separados por
+// comas (p.ej. "uid1,uid2"). Las reglas de seguridad de Firestore Y el Worker
+// de la IA comprueban esta misma lista — así "el backend" sabe exactamente
+// para quién está configurada la clave de IA, sin que nadie más pueda usarla.
+export const OWNER_UIDS: string[] = ((import.meta.env.VITE_OWNER_UID as string) || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);

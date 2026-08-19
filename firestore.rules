@@ -3,26 +3,28 @@ rules_version = '2';
 // ============================================================================
 // Reglas de seguridad — Air Fryer Chef
 // ----------------------------------------------------------------------------
-// App personal de un único usuario. Reemplaza OWNER_UID_PLACEHOLDER por tu
-// UID real de Firebase Auth (Authentication → Users, tras tu primer login
-// con Google) y vuelve a desplegar las reglas:
+// App para un grupo cerrado de personas (p.ej. pareja/familia compartiendo la
+// Air Fryer). Sustituye la lista de abajo por los UID reales de Firebase Auth
+// (Authentication → Users) de cada persona con acceso, y vuelve a desplegar:
 //
 //   firebase deploy --only firestore:rules
 //
-// Hasta que hagas ese reemplazo, NADIE puede leer ni escribir nada (más
+// Hasta que rellenes la lista, NADIE puede leer ni escribir nada (más
 // seguro por defecto que dejarlo abierto mientras configuras).
 // ============================================================================
 
 function isOwner() {
-  return request.auth != null && request.auth.uid == 'OWNER_UID_PLACEHOLDER';
+  return request.auth != null && request.auth.uid in ['OWNER_UID_PLACEHOLDER'];
 }
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Catálogo (modelos de Air Fryer, alimentos): solo el propio dueño lee y
-    // escribe. Como es una app personal, no hay necesidad de exponerlo
-    // públicamente aunque el contenido en sí no sea sensible.
+    // Catálogo (modelos de Air Fryer, alimentos) y recetas: accesible por
+    // cualquiera de las personas autorizadas arriba. Las recetas en sí se
+    // comparten entre todas ellas (p.ej. pareja/familia); lo que NO se
+    // comparte es la despensa, favoritos, valoraciones y notas de cada
+    // persona, que viven bajo users/{uid} y solo esa persona puede tocar.
     match /airFryerModels/{docId} {
       allow read, write: if isOwner();
     }
@@ -35,8 +37,8 @@ service cloud.firestore {
 
     // Todo lo del usuario (preferencias, despensa, recetario, notas,
     // conversaciones, preferencias derivadas) vive bajo users/{uid}/** y solo
-    // es accesible por ese mismo uid — y solo si además coincide con el
-    // propietario configurado arriba.
+    // es accesible por ese mismo uid — y solo si además está en la lista de
+    // personas autorizadas.
     match /users/{uid} {
       allow read, write: if isOwner() && request.auth.uid == uid;
 
