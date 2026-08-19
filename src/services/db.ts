@@ -295,6 +295,93 @@ export async function toggleCategory(uid: string, recipeId: string, category: st
   await updateDoc(doc(db, 'users', uid, 'userRecipes', recipeId), { categories: Array.from(categories) });
 }
 
+// ---------------------------------------------------------------------------
+// Edición, duplicado y borrado de recetas
+// ---------------------------------------------------------------------------
+
+export interface EditableRecipeIngredient {
+  name: string;
+  quantity: number;
+  unit: string;
+  group: string;
+}
+export interface EditableRecipeStep {
+  stepNumber: number;
+  instruction: string;
+  tempC: number | null;
+  timeMin: number | null;
+  zone: string | null;
+  requiresShaking: boolean;
+  requiresFlipping: boolean;
+}
+
+/** Actualiza los campos de una receta directamente (edición manual del usuario). */
+export async function updateRecipe(
+  uid: string,
+  recipeId: string,
+  patch: {
+    name?: string;
+    description?: string;
+    difficulty?: string;
+    servingsBase?: number;
+    totalTimeMin?: number;
+    airFryerTimeMin?: number;
+    cuisineType?: string | null;
+    safetyNotes?: string | null;
+    ingredients?: EditableRecipeIngredient[];
+    steps?: EditableRecipeStep[];
+  }
+) {
+  await updateDoc(doc(db, 'recipes', recipeId), { ...patch, source: 'USER_CREATED' });
+
+  // El recetario guarda un resumen desnormalizado (para listar sin tener que
+  // leer cada receta completa) — hay que mantenerlo sincronizado con los
+  // campos que hayan cambiado, si esta receta está guardada en el recetario.
+  const summaryPatch: Record<string, unknown> = {};
+  if (patch.name !== undefined) summaryPatch['summary.name'] = patch.name;
+  if (patch.description !== undefined) summaryPatch['summary.description'] = patch.description;
+  if (patch.difficulty !== undefined) summaryPatch['summary.difficulty'] = patch.difficulty;
+  if (patch.servingsBase !== undefined) summaryPatch['summary.servingsBase'] = patch.servingsBase;
+  if (patch.totalTimeMin !== undefined) summaryPatch['summary.totalTimeMin'] = patch.totalTimeMin;
+  if (patch.airFryerTimeMin !== undefined) summaryPatch['summary.airFryerTimeMin'] = patch.airFryerTimeMin;
+
+  if (Object.keys(summaryPatch).length > 0) {
+    const userRecipeRef = doc(db, 'users', uid, 'userRecipes', recipeId);
+    const snap = await getDoc(userRecipeRef);
+    if (snap.exists()) {
+      await updateDoc(userRecipeRef, summaryPatch);
+    }
+  }
+}
+
+/**
+ * Crea una copia independiente de una receta ya guardada y la añade al
+ * recetario. Útil para "duplicar y ajustar" sin tocar el original.
+ */
+export async function duplicateRecipe(uid: string, recipeId: string) {
+  const original = await getRecipe(recipeId);
+  if (!original) throw new Error('Receta no encontrada.');
+
+  const { id: _omit, ...rest } = original as any;
+  const copyData = {
+    ...rest,
+    name: `${rest.name} (copia)`,
+    source: 'USER_CREATED',
+    createdByUserId: uid,
+    createdAt: serverTimestamp()
+  };
+
+  const ref = await addDoc(collection(db, 'recipes'), copyData);
+  await saveToRecetario(uid, ref.id, copyData);
+  return { id: ref.id, ...copyData };
+}
+
+/** Elimina la receta del recetario del usuario y su documento en `recipes`. */
+export async function deleteRecipe(uid: string, recipeId: string) {
+  await deleteDoc(doc(db, 'users', uid, 'userRecipes', recipeId)).catch(() => null);
+  await deleteDoc(doc(db, 'recipes', recipeId)).catch(() => null);
+}
+
 export async function listDerivedPreferences(uid: string) {
   const snap = await getDocs(query(collection(db, 'users', uid, 'derivedPreferences'), fsLimit(10)));
   return snap.docs.map((d) => d.data() as any);

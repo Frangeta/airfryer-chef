@@ -1,36 +1,66 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, ArrowUpDown } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/AuthProvider';
 import * as repo from '@/services/db';
 import { Card } from '@/components/ui/Card';
 import { Chip } from '@/components/ui/Chip';
 import { RecipeCard } from '@/components/recipe/RecipeCard';
-import { SYSTEM_CATEGORIES } from '@/types';
+
+type SortKey = 'recent' | 'name' | 'time';
 
 export default function Recetario() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [rows, setRows] = useState<any[]>([]);
+  const [allCategories, setAllCategories] = useState<string[]>([]);
   const [q, setQ] = useState('');
   const [favoritesOnly, setFavoritesOnly] = useState(searchParams.get('favorites') === 'true');
   const [category, setCategory] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<SortKey>('recent');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  function load() {
     if (!user) return;
     setLoading(true);
-    repo.listUserRecipes(user.uid, { favoritesOnly, category: category ?? undefined, q: q || undefined }).then((r) => {
+    Promise.all([
+      repo.listUserRecipes(user.uid, { favoritesOnly, category: category ?? undefined, q: q || undefined }),
+      repo.getUserDoc(user.uid)
+    ]).then(([r, userDoc]) => {
       setRows(r);
+      setAllCategories(userDoc?.categories ?? []);
       setLoading(false);
     });
-  }, [user, q, favoritesOnly, category]);
+  }
+
+  useEffect(load, [user, q, favoritesOnly, category]);
+
+  const sortedRows = useMemo(() => {
+    const copy = [...rows];
+    if (sortKey === 'name') copy.sort((a, b) => (a.summary?.name ?? '').localeCompare(b.summary?.name ?? ''));
+    else if (sortKey === 'time') copy.sort((a, b) => (a.summary?.airFryerTimeMin ?? 0) - (b.summary?.airFryerTimeMin ?? 0));
+    else copy.sort((a, b) => (b.savedAt?.seconds ?? 0) - (a.savedAt?.seconds ?? 0));
+    return copy;
+  }, [rows, sortKey]);
 
   async function toggleFavorite(recipeId: string) {
     if (!user) return;
     setRows((prev) => prev.map((r) => (r.recipeId === recipeId ? { ...r, isFavorite: !r.isFavorite } : r)));
     await repo.toggleFavorite(user.uid, recipeId);
+  }
+
+  async function handleDuplicate(recipeId: string) {
+    if (!user) return;
+    await repo.duplicateRecipe(user.uid, recipeId);
+    load();
+  }
+
+  async function handleDelete(recipeId: string, name: string) {
+    if (!user) return;
+    if (!window.confirm(`¿Eliminar "${name}" del recetario? Esta acción no se puede deshacer.`)) return;
+    setRows((prev) => prev.filter((r) => r.recipeId !== recipeId));
+    await repo.deleteRecipe(user.uid, recipeId);
   }
 
   return (
@@ -54,11 +84,25 @@ export default function Recetario() {
           <Chip active={favoritesOnly} onClick={() => setFavoritesOnly((v) => !v)}>
             ❤️ Favoritas
           </Chip>
-          {SYSTEM_CATEGORIES.filter((c) => c !== 'Favoritas').map((c) => (
-            <Chip key={c} active={category === c} onClick={() => setCategory(category === c ? null : c)}>
-              {c}
-            </Chip>
-          ))}
+          {allCategories
+            .filter((c) => c !== 'Favoritas')
+            .map((c) => (
+              <Chip key={c} active={category === c} onClick={() => setCategory(category === c ? null : c)}>
+                {c}
+              </Chip>
+            ))}
+        </div>
+        <div className="flex items-center gap-2 pt-1">
+          <ArrowUpDown className="w-3.5 h-3.5 text-ink/40" />
+          <select
+            value={sortKey}
+            onChange={(e) => setSortKey(e.target.value as SortKey)}
+            className="text-sm rounded-lg border border-black/10 px-2 py-1.5 bg-paper"
+          >
+            <option value="recent">Guardadas recientemente</option>
+            <option value="name">Nombre (A-Z)</option>
+            <option value="time">Tiempo en Air Fryer</option>
+          </select>
         </div>
       </Card>
 
@@ -73,7 +117,7 @@ export default function Recetario() {
       )}
 
       <div className="grid md:grid-cols-2 gap-4">
-        {rows.map((r) => (
+        {sortedRows.map((r) => (
           <RecipeCard
             key={r.id}
             recipe={{
@@ -89,6 +133,8 @@ export default function Recetario() {
             }}
             onView={() => navigate(`/recetas/${r.recipeId}`)}
             onFavoriteToggle={() => toggleFavorite(r.recipeId)}
+            onDuplicate={() => handleDuplicate(r.recipeId)}
+            onDelete={() => handleDelete(r.recipeId, r.summary?.name ?? 'esta receta')}
           />
         ))}
       </div>

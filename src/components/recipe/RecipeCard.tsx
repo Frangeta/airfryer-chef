@@ -1,5 +1,5 @@
 
-import { Clock, Flame, Users, ChefHat, AlertTriangle, Layers } from 'lucide-react';
+import { Clock, Flame, Users, ChefHat, AlertTriangle, Layers, Copy, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Badge, DifficultyBadge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -26,6 +26,8 @@ export function RecipeCard({
   onFavoriteToggle,
   onLike,
   onDislike,
+  onDuplicate,
+  onDelete,
   saving
 }: {
   recipe: RecipeCardData;
@@ -34,6 +36,8 @@ export function RecipeCard({
   onFavoriteToggle?: () => void;
   onLike?: () => void;
   onDislike?: () => void;
+  onDuplicate?: () => void;
+  onDelete?: () => void;
   saving?: boolean;
 }) {
   return (
@@ -102,6 +106,16 @@ export function RecipeCard({
         {onDislike && (
           <Button variant="ghost" size="sm" onClick={onDislike} aria-label="No me gusta">
             👎
+          </Button>
+        )}
+        {onDuplicate && (
+          <Button variant="ghost" size="sm" onClick={onDuplicate} aria-label="Duplicar">
+            <Copy className="w-3.5 h-3.5" />
+          </Button>
+        )}
+        {onDelete && (
+          <Button variant="ghost" size="sm" onClick={onDelete} aria-label="Eliminar" className="text-warn hover:bg-warn/10">
+            <Trash2 className="w-3.5 h-3.5" />
           </Button>
         )}
       </div>
