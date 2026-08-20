@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { House, BookOpen, Sparkles, CookingPot, Table2, Plus, Settings, LogOut } from 'lucide-react';
+import { House, BookOpen, Sparkles, CookingPot, Table2, Plus, Settings, LogOut, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/AuthProvider';
 import { BasketMark } from '@/components/ui/BasketMark';
 
@@ -41,6 +41,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
         <div className="flex items-center gap-2">
           <Link
+            to="/ayuda"
+            aria-label="Ayuda"
+            className={`flex items-center justify-center w-9 h-9 rounded-xl transition-colors ${
+              pathname.startsWith('/ayuda') ? 'bg-paprika-50 text-paprika-600' : 'text-ink/60 hover:bg-black/[0.04]'
+            }`}
+          >
+            <HelpCircle className="w-[18px] h-[18px]" />
+          </Link>
+          <Link
             to="/configuracion"
             aria-label="Configuración"
             className={`flex items-center justify-center w-9 h-9 rounded-xl transition-colors ${
@@ -71,6 +80,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           Air Fryer Chef
         </Link>
         <div className="flex items-center gap-1.5">
+          <Link to="/ayuda" aria-label="Ayuda" className="flex items-center justify-center w-9 h-9 rounded-full text-ink/60">
+            <HelpCircle className="w-5 h-5" />
+          </Link>
           <Link to="/configuracion" aria-label="Configuración" className="flex items-center justify-center w-9 h-9 rounded-full text-ink/60">
             <Settings className="w-5 h-5" />
           </Link>

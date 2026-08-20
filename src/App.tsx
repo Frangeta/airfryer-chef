@@ -11,6 +11,7 @@ import Despensa from '@/pages/Despensa';
 import Configuracion from '@/pages/Configuracion';
 import Chat from '@/pages/Chat';
 import Convertir from '@/pages/Convertir';
+import Ayuda from '@/pages/Ayuda';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/configuracion" element={<Configuracion />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/convertir" element={<Convertir />} />
+            <Route path="/ayuda" element={<Ayuda />} />
           </Routes>
         </AppShell>
       </LoginGate>

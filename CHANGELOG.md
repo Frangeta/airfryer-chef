@@ -8,6 +8,36 @@ casi siempre cambian a la vez.
 
 ---
 
+## [1.8.0] — Guía de uso, Chef IA más visual, Dashboard sin caos
+
+**Añadido**
+- Página **Ayuda** (`/ayuda`), permanentemente accesible desde un icono "?"
+  en la navegación: repasa cada sección de la app con icono y una frase.
+- Aviso de bienvenida en el Dashboard (`OnboardingBanner`), visible solo la
+  primera vez (se recuerda por persona en `localStorage`), con la misma
+  guía en versión compacta y un enlace a la página completa.
+- `IntentTiles`: en el Chef IA, los 14 filtros de intención dejaban de ser
+  una lista plana de texto y pasan a ser 6 "tarjetas de humor" con icono
+  (Cena rápida, Ligera, Crujiente, Restaurante, Vegetariano, Sobras) más dos
+  grupos secundarios más pequeños (cocina del mundo, otros filtros).
+- El formulario del Chef IA ahora tiene pasos numerados (1. Ingredientes,
+  2. Estilo) para guiar mejor a alguien que lo usa por primera vez.
+
+**Cambiado**
+- Dashboard reestructurado para reducir la sensación de desorden:
+  - Favoritos / Rápidas / Recientes eran 3 secciones apiladas con grids
+    parecidas; ahora son pestañas dentro de una única sección (solo se
+    muestran las pestañas que tienen contenido).
+  - Los 4 accesos rápidos pasan de tarjetas grandes en cuadrícula a una
+    fila de píldoras compactas (menos peso visual, ya que las mismas
+    secciones están también en la navegación principal).
+  - La vista previa de "Tabla rápida" deja de ser una tabla HTML con bordes
+    y pasa a ser una lista limpia sin rejilla.
+
+**Archivos clave**: `src/components/generator/IntentTiles.tsx` (nuevo), `src/components/help/guideContent.ts` (nuevo), `src/components/dashboard/OnboardingBanner.tsx` (nuevo), `src/pages/Ayuda.tsx` (nuevo), `src/pages/Generar.tsx`, `src/pages/Dashboard.tsx`, `src/components/layout/AppShell.tsx`, `src/App.tsx`.
+
+---
+
 ## [1.7.0] — Identidad visual: marca, favicon, pantalla de acceso
 
 **Añadido**

@@ -6,19 +6,13 @@ import * as repo from '@/services/db';
 import { generateProposals } from '@/services/recipeGeneration';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Chip } from '@/components/ui/Chip';
 import { Spinner } from '@/components/ui/Spinner';
 import { IngredientChipInput } from '@/components/ingredients/IngredientChipInput';
+import { IntentTiles } from '@/components/generator/IntentTiles';
 import { RecipeCard } from '@/components/recipe/RecipeCard';
 import { DualBasketTimeline } from '@/components/recipe/DualBasketTimeline';
 
 const PANTRY_SUGGESTIONS = ['Pollo', 'Patatas', 'Cebolla', 'Pimiento', 'Salmón', 'Huevo', 'Brócoli'];
-
-const INTENT_CHIPS = [
-  'Cena rápida', 'Cena ligera', 'Algo crujiente', 'Algo saludable', 'Algo tipo restaurante',
-  'Receta mexicana', 'Receta italiana', 'Receta española', 'Receta asiática',
-  'Aprovechar sobras', 'Con pollo', 'Con pescado', 'Vegetariano', 'Menos de 20 minutos'
-];
 
 interface ProposalVM {
   recipe: any;
@@ -129,29 +123,32 @@ export default function Generar() {
         </div>
       </div>
 
-      <Card className="p-5 space-y-4">
+      <Card className="p-5 space-y-5">
         <div>
-          <label className="text-sm font-medium text-ink/80 block mb-2">Tengo estos ingredientes</label>
+          <label className="flex items-center gap-2 text-sm font-medium text-ink/80 mb-2">
+            <span className="w-5 h-5 rounded-full bg-paprika-500 text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
+              1
+            </span>
+            Tengo estos ingredientes <span className="text-ink/40 font-normal">(opcional)</span>
+          </label>
           <IngredientChipInput ingredients={ingredients} onChange={setIngredients} suggestions={PANTRY_SUGGESTIONS} />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-ink/80 block mb-2">¿Qué te apetece?</label>
+          <label className="flex items-center gap-2 text-sm font-medium text-ink/80 mb-2">
+            <span className="w-5 h-5 rounded-full bg-paprika-500 text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
+              2
+            </span>
+            Elige un estilo, o escribe lo que te apetece
+          </label>
+          <IntentTiles active={userRequest} onSelect={setUserRequest} />
           <textarea
             value={userRequest}
             onChange={(e) => setUserRequest(e.target.value)}
-            placeholder='Ej. "Quiero una cena rápida para 4" o "algo tipo kebab con pollo"'
+            placeholder='Ej. "algo tipo kebab con pollo"…'
             rows={2}
-            className="w-full rounded-xl border border-black/10 bg-cream/40 px-3.5 py-2.5 text-sm outline-none focus:border-paprika-400 resize-none"
+            className="w-full mt-3 rounded-xl border border-black/10 bg-cream/40 px-3.5 py-2.5 text-sm outline-none focus:border-paprika-400 resize-none"
           />
-        </div>
-
-        <div className="flex flex-wrap gap-1.5">
-          {INTENT_CHIPS.map((chip) => (
-            <Chip key={chip} active={userRequest === chip} onClick={() => setUserRequest(chip)}>
-              {chip}
-            </Chip>
-          ))}
         </div>
 
         <div className="flex items-center gap-3">
