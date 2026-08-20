@@ -8,6 +8,30 @@ casi siempre cambian a la vez.
 
 ---
 
+## [1.10.0] — Logo real, y el recuadro de inicio en verde
+
+**Cambiado**
+- **Sustituida la marca dibujada a mano (`BasketMark`, dos cuadrados
+  superpuestos) por el logo real de Chefryer** proporcionado por el usuario
+  (gorro de chef + hoja + burbuja "IA"). El logo se recortó a partir de la
+  imagen completa (que incluía también el nombre y el eslogan), y se le
+  quitó el fondo blanco con un recorte de transparencia de borde suave — el
+  archivo original solo tenía fondo blanco sólido, sin canal alfa.
+- Nuevo componente `LogoMark` (sustituye a `BasketMark`) en los mismos 4
+  sitios: navegación, pantalla de acceso, caja del Dashboard y página de
+  Ayuda.
+- Favicon e iconos de instalación (`public/icons/*.png`) regenerados a
+  partir del logo real, en vez del mark dibujado a mano — mismos nombres de
+  archivo que antes, así que el manifest de la PWA no necesitó ningún cambio.
+- **El recuadro "¿Qué quieres cocinar?" del Dashboard pasa de cálido
+  (naranja/marrón) a verde azulado** — el color cálido se conserva solo como
+  "toque" puntual: el botón "Generar" y el icono junto a "Chef IA", no la
+  caja entera.
+
+**Archivos clave**: `src/components/ui/LogoMark.tsx` (nuevo, sustituye a `BasketMark.tsx`, eliminado), `public/icons/*.png` (regenerados), `public/favicon.svg` (eliminado — ya no se usa un SVG dibujado a mano), `src/components/dashboard/DashboardPromptBox.tsx`, `index.html`, `vite.config.ts`.
+
+---
+
 ## [1.9.0] — Identidad de marca: Chefryer, paleta verde azulada, instalable
 
 **Cambiado**

@@ -20,7 +20,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['favicon.svg', 'icons/favicon-16.png', 'icons/favicon-32.png'],
+      includeAssets: ['icons/favicon-16.png', 'icons/favicon-32.png'],
       manifest: {
         name: 'Chefryer',
         short_name: 'Chefryer',

@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { House, BookOpen, Sparkles, CookingPot, Table2, Plus, Settings, LogOut, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/AuthProvider';
-import { BasketMark } from '@/components/ui/BasketMark';
+import { LogoMark } from '@/components/ui/LogoMark';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Inicio', icon: House },
@@ -20,7 +20,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col">
       <header className="hidden md:flex items-center justify-between px-8 h-16 border-b border-black/5 bg-paper/70 backdrop-blur sticky top-0 z-30">
         <Link to="/" className="flex items-center gap-2 font-semibold text-lg tracking-tight">
-          <BasketMark className="w-6 h-6" />
+          <LogoMark className="w-6 h-6" />
           Chefryer
         </Link>
         <nav className="flex items-center gap-1">
@@ -76,7 +76,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <header className="md:hidden flex items-center justify-between px-4 h-14 border-b border-black/5 bg-paper/70 backdrop-blur sticky top-0 z-30">
         <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <BasketMark className="w-5 h-5" />
+          <LogoMark className="w-5 h-5" />
           Chefryer
         </Link>
         <div className="flex items-center gap-1.5">

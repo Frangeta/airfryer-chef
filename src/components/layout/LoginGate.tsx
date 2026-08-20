@@ -3,7 +3,7 @@ import { Clock3, Database, LogOut, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/AuthProvider';
 import { initAccessDoc } from '@/services/db';
 import { Button } from '@/components/ui/Button';
-import { BasketMark } from '@/components/ui/BasketMark';
+import { LogoMark } from '@/components/ui/LogoMark';
 import { GoogleIcon } from '@/components/ui/GoogleIcon';
 
 /**
@@ -31,7 +31,7 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <BasketMark className="w-8 h-8 animate-pulse" />
+        <LogoMark className="w-8 h-8 animate-pulse" />
       </div>
     );
   }
@@ -40,7 +40,7 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
     return (
       <GateShell>
         <div className="flex flex-col items-center gap-6 text-center">
-          <BasketMark className="w-16 h-16" />
+          <LogoMark className="w-16 h-16" />
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Chefryer</h1>
             <p className="text-sm text-ink/55 mt-1.5">Entra para ver qué cocinamos hoy.</p>

@@ -1,4 +1,4 @@
-import { BasketMark } from '@/components/ui/BasketMark';
+import { LogoMark } from '@/components/ui/LogoMark';
 import { Card } from '@/components/ui/Card';
 import { GUIDE_ITEMS, VARIANT_STYLES } from '@/components/help/guideContent';
 
@@ -6,7 +6,7 @@ export default function Ayuda() {
   return (
     <div className="max-w-2xl mx-auto px-4 md:px-0 py-6 space-y-6">
       <div className="flex items-center gap-3">
-        <BasketMark className="w-10 h-10" />
+        <LogoMark className="w-10 h-10" />
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Cómo funciona Chefryer</h1>
           <p className="text-sm text-ink/60 mt-0.5">Un repaso rápido a cada sección de la app.</p>
