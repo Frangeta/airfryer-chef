@@ -65,7 +65,7 @@ export function RecipeCard({
           <Users className="w-3 h-3" /> {recipe.servingsBase}
         </Badge>
         {recipe.isDualZone && (
-          <Badge variant="paprika">
+          <Badge variant="teal">
             <Layers className="w-3 h-3" /> Doble cesta
           </Badge>
         )}

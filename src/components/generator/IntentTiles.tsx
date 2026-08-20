@@ -14,7 +14,7 @@ const CUISINE_CHIPS = ['Receta mexicana', 'Receta italiana', 'Receta española',
 const FILTER_CHIPS = ['Algo saludable', 'Con pollo', 'Con pescado', 'Menos de 20 minutos'];
 
 const TILE_VARIANTS: Record<string, string> = {
-  paprika: 'bg-paprika-50 text-paprika-600',
+  paprika: 'bg-teal-50 text-teal-600',
   basket1: 'bg-basket1-light text-basket1-dark',
   basket2: 'bg-basket2-light text-basket2-dark',
   gold: 'bg-gold-100 text-gold-600'
@@ -31,7 +31,7 @@ export function IntentTiles({ active, onSelect }: { active: string; onSelect: (v
               key={label}
               onClick={() => onSelect(label)}
               className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition-all ${
-                isActive ? 'border-paprika-400 bg-paprika-50/60' : 'border-black/10 hover:border-black/20'
+                isActive ? 'border-teal-400 bg-teal-50/60' : 'border-black/10 hover:border-black/20'
               }`}
             >
               <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${TILE_VARIANTS[variant]}`}>

@@ -1,10 +1,14 @@
 import { forwardRef } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type Variant = 'primary' | 'warm' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-paprika-500 hover:bg-paprika-600 text-white shadow-card',
+  primary: 'bg-teal-500 hover:bg-teal-600 text-white shadow-card',
+  // Cálido a propósito: reservado para los botones que ponen la IA en
+  // marcha (generar, convertir) — el contraste cálido frente al resto de la
+  // app en verde azulado es deliberado, no un descuido.
+  warm: 'bg-paprika-500 hover:bg-paprika-600 text-white shadow-card',
   secondary: 'bg-black/[0.04] hover:bg-black/[0.07] text-ink',
   ghost: 'bg-transparent hover:bg-black/[0.04] text-ink/80',
   danger: 'bg-warn/10 hover:bg-warn/20 text-warn'

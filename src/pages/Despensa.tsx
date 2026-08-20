@@ -70,7 +70,7 @@ export default function Despensa() {
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && addItem()}
           placeholder="Añadir ingrediente…"
-          className="flex-1 min-w-[160px] rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-paprika-400"
+          className="flex-1 min-w-[160px] rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-teal-400"
         />
         <select
           value={category}

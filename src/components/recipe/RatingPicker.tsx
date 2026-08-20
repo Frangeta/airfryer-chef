@@ -16,7 +16,7 @@ export function RatingPicker({ value, onChange }: { value?: string | null; onCha
           aria-label={opt.label}
           title={opt.label}
           className={`w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all ${
-            value === opt.value ? 'bg-paprika-50 ring-2 ring-paprika-400 scale-110' : 'bg-black/[0.04] hover:bg-black/[0.07]'
+            value === opt.value ? 'bg-teal-50 ring-2 ring-teal-400 scale-110' : 'bg-black/[0.04] hover:bg-black/[0.07]'
           }`}
         >
           {opt.emoji}

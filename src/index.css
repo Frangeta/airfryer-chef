@@ -5,8 +5,8 @@
 html, body, #root { height: 100%; }
 body { background-color: #f6f3ec; color: #2a2420; margin: 0; }
 * { -webkit-tap-highlight-color: transparent; }
-::selection { background-color: #f0b79c; color: #2a2420; }
-:focus-visible { outline: 2px solid #c1502e; outline-offset: 2px; border-radius: 4px; }
+::selection { background-color: #A9CFC0; color: #2a2420; }
+:focus-visible { outline: 2px solid #2E6F5C; outline-offset: 2px; border-radius: 4px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

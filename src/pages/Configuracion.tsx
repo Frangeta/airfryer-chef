@@ -159,9 +159,9 @@ export default function Configuracion() {
       </Card>
 
       {models.length === 0 && (
-        <Card className="p-5 space-y-3 border border-paprika-200">
+        <Card className="p-5 space-y-3 border border-teal-200">
           <div className="flex items-start gap-2.5">
-            <Database className="w-5 h-5 text-paprika-500 shrink-0 mt-0.5" />
+            <Database className="w-5 h-5 text-teal-500 shrink-0 mt-0.5" />
             <div>
               <h2 className="text-sm font-semibold text-ink/80">Primera vez por aquí</h2>
               <p className="text-xs text-ink/55 mt-1">
@@ -190,7 +190,7 @@ export default function Configuracion() {
               key={m.id}
               onClick={() => setAirFryerModelId(m.id)}
               className={`text-left rounded-xl border px-4 py-3 transition-colors ${
-                airFryerModelId === m.id ? 'border-paprika-400 bg-paprika-50' : 'border-black/10 hover:border-black/20'
+                airFryerModelId === m.id ? 'border-teal-400 bg-teal-50' : 'border-black/10 hover:border-black/20'
               }`}
             >
               <div className="font-medium text-sm">
@@ -216,7 +216,7 @@ export default function Configuracion() {
           value={maxCookTimeMinutes}
           onChange={(e) => setMaxCookTimeMinutes(e.target.value === '' ? '' : Number(e.target.value))}
           placeholder="Ej. 45 min"
-          className="w-32 rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-paprika-400"
+          className="w-32 rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal-400"
         />
       </Card>
 
@@ -265,7 +265,7 @@ export default function Configuracion() {
             }
           }}
           placeholder="Ej. cilantro"
-          className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-paprika-400"
+          className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal-400"
         />
       </Card>
 
@@ -288,7 +288,7 @@ export default function Configuracion() {
             }
           }}
           placeholder="Ej. marisco, frutos secos"
-          className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-paprika-400"
+          className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal-400"
         />
       </Card>
 

@@ -53,7 +53,7 @@ export const GUIDE_ITEMS: GuideItem[] = [
 ];
 
 export const VARIANT_STYLES: Record<GuideItem['variant'], string> = {
-  paprika: 'bg-paprika-50 text-paprika-600',
+  paprika: 'bg-teal-50 text-teal-600',
   basket1: 'bg-basket1-light text-basket1-dark',
   basket2: 'bg-basket2-light text-basket2-dark',
   gold: 'bg-gold-100 text-gold-600'

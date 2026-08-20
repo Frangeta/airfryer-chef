@@ -67,7 +67,7 @@ export default function Tablas() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Buscar alimento…"
-            className="w-full rounded-xl border border-black/10 bg-cream/40 pl-9 pr-3.5 py-2.5 text-sm outline-none focus:border-paprika-400"
+            className="w-full rounded-xl border border-black/10 bg-cream/40 pl-9 pr-3.5 py-2.5 text-sm outline-none focus:border-teal-400"
           />
         </div>
         <div className="flex flex-wrap gap-1.5">

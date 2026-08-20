@@ -21,7 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="hidden md:flex items-center justify-between px-8 h-16 border-b border-black/5 bg-paper/70 backdrop-blur sticky top-0 z-30">
         <Link to="/" className="flex items-center gap-2 font-semibold text-lg tracking-tight">
           <BasketMark className="w-6 h-6" />
-          Air Fryer Chef
+          Chefryer
         </Link>
         <nav className="flex items-center gap-1">
           {NAV_ITEMS.map((item) => {
@@ -31,7 +31,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 to={item.href}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                  active ? 'bg-paprika-50 text-paprika-600' : 'text-ink/70 hover:bg-black/[0.03] hover:text-ink'
+                  active ? 'bg-teal-50 text-teal-600' : 'text-ink/70 hover:bg-black/[0.03] hover:text-ink'
                 }`}
               >
                 {item.label}
@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             to="/ayuda"
             aria-label="Ayuda"
             className={`flex items-center justify-center w-9 h-9 rounded-xl transition-colors ${
-              pathname.startsWith('/ayuda') ? 'bg-paprika-50 text-paprika-600' : 'text-ink/60 hover:bg-black/[0.04]'
+              pathname.startsWith('/ayuda') ? 'bg-teal-50 text-teal-600' : 'text-ink/60 hover:bg-black/[0.04]'
             }`}
           >
             <HelpCircle className="w-[18px] h-[18px]" />
@@ -53,7 +53,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             to="/configuracion"
             aria-label="Configuración"
             className={`flex items-center justify-center w-9 h-9 rounded-xl transition-colors ${
-              pathname.startsWith('/configuracion') ? 'bg-paprika-50 text-paprika-600' : 'text-ink/60 hover:bg-black/[0.04]'
+              pathname.startsWith('/configuracion') ? 'bg-teal-50 text-teal-600' : 'text-ink/60 hover:bg-black/[0.04]'
             }`}
           >
             <Settings className="w-[18px] h-[18px]" />
@@ -77,7 +77,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="md:hidden flex items-center justify-between px-4 h-14 border-b border-black/5 bg-paper/70 backdrop-blur sticky top-0 z-30">
         <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <BasketMark className="w-5 h-5" />
-          Air Fryer Chef
+          Chefryer
         </Link>
         <div className="flex items-center gap-1.5">
           <Link to="/ayuda" aria-label="Ayuda" className="flex items-center justify-center w-9 h-9 rounded-full text-ink/60">
@@ -107,7 +107,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 to={item.href}
-                className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium ${active ? 'text-paprika-600' : 'text-ink/50'}`}
+                className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium ${active ? 'text-teal-600' : 'text-ink/50'}`}
               >
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.4 : 2} />
                 {item.label}

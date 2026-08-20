@@ -217,7 +217,7 @@ export default function RecipeDetail() {
             <input
               value={editForm.name}
               onChange={(e) => setEditForm((f: any) => ({ ...f, name: e.target.value }))}
-              className="text-2xl font-semibold tracking-tight flex-1 rounded-lg border border-black/10 px-2 py-1 outline-none focus:border-paprika-400"
+              className="text-2xl font-semibold tracking-tight flex-1 rounded-lg border border-black/10 px-2 py-1 outline-none focus:border-teal-400"
             />
           ) : (
             <h1 className="text-2xl font-semibold tracking-tight">{recipe.name}</h1>
@@ -234,7 +234,7 @@ export default function RecipeDetail() {
             value={editForm.description}
             onChange={(e) => setEditForm((f: any) => ({ ...f, description: e.target.value }))}
             rows={2}
-            className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-paprika-400 resize-none"
+            className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal-400 resize-none"
           />
         ) : (
           <p className="text-ink/60">{recipe.description}</p>
@@ -250,7 +250,7 @@ export default function RecipeDetail() {
               <Flame className="w-3 h-3" /> {recipe.airFryerTimeMin} min en Air Fryer
             </Badge>
             {recipe.isDualZone && (
-              <Badge variant="paprika">
+              <Badge variant="teal">
                 <Layers className="w-3 h-3" /> Doble cesta
               </Badge>
             )}
@@ -447,7 +447,7 @@ export default function RecipeDetail() {
       {timelineZones && !editMode && (
         <Card className="p-5">
           <h3 className="text-sm font-semibold text-ink/70 mb-4 flex items-center gap-1.5">
-            <Layers className="w-4 h-4 text-paprika-500" /> Sincronización de doble cesta
+            <Layers className="w-4 h-4 text-teal-500" /> Sincronización de doble cesta
           </h3>
           <DualBasketTimeline zones={timelineZones} globalTotalMin={globalTotalMin} startTogether={startTogether} />
           <p className="text-xs text-ink/40 mt-3">
@@ -463,7 +463,7 @@ export default function RecipeDetail() {
           <ol className="space-y-3">
             {recipe.steps.map((s: any, idx: number) => (
               <li key={idx} className="flex gap-3">
-                <span className="w-6 h-6 rounded-full bg-paprika-50 text-paprika-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">
+                <span className="w-6 h-6 rounded-full bg-teal-50 text-teal-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">
                   {s.stepNumber}
                 </span>
                 <div className="space-y-1">
@@ -607,7 +607,7 @@ export default function RecipeDetail() {
                   onChange={(e) => setNewCategoryDraft(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && createCategory()}
                   placeholder="Nueva categoría…"
-                  className="flex-1 min-w-[140px] rounded-lg border border-black/10 px-2.5 py-1.5 text-sm outline-none focus:border-paprika-400"
+                  className="flex-1 min-w-[140px] rounded-lg border border-black/10 px-2.5 py-1.5 text-sm outline-none focus:border-teal-400"
                 />
                 <Button size="sm" variant="secondary" onClick={createCategory}>
                   <Plus className="w-3.5 h-3.5" /> Crear
@@ -624,7 +624,7 @@ export default function RecipeDetail() {
                 onChange={(e) => setNoteDraft(e.target.value)}
                 placeholder="Ej. La próxima vez poner menos sal. 18 minutos fue demasiado."
                 rows={2}
-                className="w-full rounded-xl border border-black/10 bg-cream/40 px-3.5 py-2.5 text-sm outline-none focus:border-paprika-400 resize-none"
+                className="w-full rounded-xl border border-black/10 bg-cream/40 px-3.5 py-2.5 text-sm outline-none focus:border-teal-400 resize-none"
               />
               <div className="flex flex-wrap items-center gap-2">
                 <select

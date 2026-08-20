@@ -8,6 +8,51 @@ casi siempre cambian a la vez.
 
 ---
 
+## [1.9.0] — Identidad de marca: Chefryer, paleta verde azulada, instalable
+
+**Cambiado**
+- **Renombrada la app de "Air Fryer Chef" a "Chefryer"** en toda la interfaz,
+  documentación, `package.json` (frontend y Worker) y `wrangler.toml`. El
+  nombre de la carpeta/repositorio de GitHub (`airfryer-chef`) se deja tal
+  cual — es solo un identificador técnico, renombrarlo es opcional y no
+  requiere ningún cambio de código (el base path se recalcula solo a partir
+  del nombre real del repo).
+- **Nueva paleta de color**: verde azulado (`teal`, nueva escala en
+  `tailwind.config.ts`) pasa a ser el color primario — navegación, botones
+  de acción habituales (guardar, aprobar, añadir), enlaces, chips
+  seleccionados, foco de teclado, selección de texto. Es, de hecho, el mismo
+  verde que ya usaba la "Cesta 2" del timeline de doble cesta — se asciende
+  de un detalle de una función a la identidad completa de la app.
+- El cálido (antes color primario) se conserva **deliberadamente como
+  contraste**, reservado solo para los momentos de "chispa": el botón
+  "Generar recetas", "Convertir a Air Fryer", la caja "¿Qué quieres
+  cocinar?" del Dashboard, el icono de Chef IA y el botón "Nueva receta" de
+  la cabecera. Se añadió un nuevo variant `warm` al componente `Button`
+  para dejar esta distinción explícita en el código, no implícita.
+- Marca (`BasketMark`) y favicon actualizados al verde azulado exacto de la
+  nueva paleta (antes usaban un verde ligeramente distinto).
+
+**Añadido**
+- **Instalable en móvil y tablet** (PWA) vía `vite-plugin-pwa`: manifest
+  (`manifest.webmanifest`) con nombre, colores e iconos en varios tamaños
+  (192/512, versiones "any" y "maskable" para el icono adaptativo de
+  Android), más un service worker que precachea el "cascarón" de la app
+  (JS/CSS/HTML/iconos) para apertura instantánea y funcionamiento sin
+  conexión — los datos en sí (Firestore) siguen necesitando red.
+- Iconos generados en `public/icons/` (PNG, dibujados directamente con
+  Pillow a partir de la misma marca de dos cestas — este entorno no tenía
+  herramientas de conversión SVG→PNG, así que se dibujaron programáticamente
+  en vez de convertir el SVG existente).
+- Meta tags de instalación para iOS/iPadOS (Safari no lee el manifest, así
+  que necesita sus propios `apple-mobile-web-app-*`) además de los
+  estándar para Android/Chrome.
+- Sección "Instalar en el móvil o la tablet" en la página de Ayuda, con los
+  pasos concretos para Android y para iOS (que no muestra aviso automático).
+
+**Archivos clave**: `tailwind.config.ts`, `src/components/ui/Button.tsx` (nuevo variant `warm`), `src/components/ui/BasketMark.tsx`, `public/favicon.svg`, `public/icons/*.png` (nuevos), `vite.config.ts` (config de `vite-plugin-pwa`), `index.html`, `src/pages/Ayuda.tsx`.
+
+---
+
 ## [1.8.0] — Guía de uso, Chef IA más visual, Dashboard sin caos
 
 **Añadido**

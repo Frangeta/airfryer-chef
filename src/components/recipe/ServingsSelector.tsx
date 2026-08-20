@@ -10,7 +10,7 @@ export function ServingsSelector({ value, onChange }: { value: number; onChange:
           key={n}
           onClick={() => onChange(n)}
           className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-            value === n ? 'bg-paprika-500 text-white' : 'bg-black/[0.05] text-ink/70 hover:bg-black/[0.09]'
+            value === n ? 'bg-teal-500 text-white' : 'bg-black/[0.05] text-ink/70 hover:bg-black/[0.09]'
           }`}
         >
           {n}

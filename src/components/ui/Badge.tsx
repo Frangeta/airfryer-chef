@@ -1,6 +1,6 @@
 const VARIANTS: Record<string, string> = {
   neutral: 'bg-black/[0.05] text-ink/70',
-  paprika: 'bg-paprika-50 text-paprika-600',
+  teal: 'bg-teal-50 text-teal-600',
   gold: 'bg-gold-100 text-gold-600',
   basket1: 'bg-basket1-light text-basket1-dark',
   basket2: 'bg-basket2-light text-basket2-dark',
@@ -24,7 +24,7 @@ export function Badge({
 }
 
 const DIFFICULTY_LABEL: Record<string, string> = { FACIL: 'Fácil', MEDIA: 'Media', AVANZADA: 'Avanzada' };
-const DIFFICULTY_VARIANT: Record<string, keyof typeof VARIANTS> = { FACIL: 'gold', MEDIA: 'paprika', AVANZADA: 'warn' };
+const DIFFICULTY_VARIANT: Record<string, keyof typeof VARIANTS> = { FACIL: 'gold', MEDIA: 'teal', AVANZADA: 'warn' };
 
 export function DifficultyBadge({ difficulty }: { difficulty: string }) {
   return <Badge variant={DIFFICULTY_VARIANT[difficulty] ?? 'neutral'}>{DIFFICULTY_LABEL[difficulty] ?? difficulty}</Badge>;

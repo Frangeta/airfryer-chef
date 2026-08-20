@@ -1,8 +1,8 @@
-# Arquitectura — Air Fryer Chef (GitHub Pages + Firebase)
+# Arquitectura — Chefryer (GitHub Pages + Firebase)
 
 > Refleja la versión **1.6.0**. Para el porqué de cada cambio de versión, ver [`CHANGELOG.md`](./CHANGELOG.md).
 
-Esta es la versión de Air Fryer Chef pensada para desplegarse sin servidor
+Esta es la versión de Chefryer pensada para desplegarse sin servidor
 propio. El diseño de producto (algoritmo de doble cesta, validación de
 recetas de IA, reglas de seguridad alimentaria, escalado de comensales) es
 el mismo desde el diseño original — lo que ha ido cambiando es dónde vive
@@ -193,6 +193,29 @@ Generar.tsx
 > entorno. Es exactamente el problema que la interfaz `AIProvider` (versión
 > Next.js original) y, ahora, el propio Worker aislado, están pensados para
 > resolver.
+
+## Identidad visual y PWA
+
+**Paleta de color**: verde azulado (`teal`) es el color primario — mismo
+tono que ya usaba la "Cesta 2" del timeline de doble cesta, ascendido a
+identidad de toda la app. El cálido (antes primario, familia `paprika`) se
+reserva deliberadamente para los momentos de "chispa": generar recetas,
+convertir a Air Fryer, y la caja de entrada del Dashboard. El componente
+`Button` tiene un variant `warm` explícito para esta distinción — el
+contraste cálido/frío es intencional, no casual, y queda documentado en el
+propio código (`src/components/ui/Button.tsx`).
+
+**PWA instalable**: `vite-plugin-pwa` genera el manifest y un service worker
+que precachea el cascarón de la app (JS/CSS/HTML/iconos) en cada build,
+leyendo automáticamente el `base` de Vite — así el manifest y las rutas
+del service worker funcionan igual de bien tanto en `usuario.github.io/repo/`
+como si algún día se usa un dominio propio, sin tocar configuración. Los
+iconos (`public/icons/*.png`) se generaron dibujando directamente con
+Pillow (Python) los mismos rectángulos redondeados de `BasketMark.tsx`, ya
+que este entorno de desarrollo no tenía herramientas de conversión
+SVG→PNG disponibles — es decir, el icono y el logo SVG son dos dibujos
+independientes con las mismas coordenadas, no una conversión del uno al otro;
+si se cambia la marca, hay que actualizar ambos.
 
 ## Limitaciones conocidas de este diseño
 

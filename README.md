@@ -1,6 +1,6 @@
-# Air Fryer Chef — despliegue en GitHub Pages + Firebase
+# Chefryer — despliegue en GitHub Pages + Firebase
 
-> Versión actual: **1.8.0** — ver [`CHANGELOG.md`](./CHANGELOG.md) para el historial completo.
+> Versión actual: **1.9.0** — ver [`CHANGELOG.md`](./CHANGELOG.md) para el historial completo.
 
 No se instala en local: se despliega en **GitHub Pages** (frontend estático),
 usa **Firestore** (Firebase) como base de datos, **Firebase Auth** (Google)
@@ -34,7 +34,7 @@ Cloudflare ni reglas de Firestore para cada persona nueva (ver paso 8).
 ## 2. Registrar la app web
 
 1. En el resumen del proyecto, icono **`</>`** (añadir app web).
-2. Ponle un nombre (p.ej. "Air Fryer Chef Web"). No hace falta Firebase Hosting.
+2. Ponle un nombre (p.ej. "Chefryer Web"). No hace falta Firebase Hosting.
 3. Copia el objeto `firebaseConfig` que te muestra — lo necesitarás en el paso 4.
 
 ## 3. Subir el proyecto a GitHub

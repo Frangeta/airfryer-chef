@@ -8,7 +8,7 @@ export default function Ayuda() {
       <div className="flex items-center gap-3">
         <BasketMark className="w-10 h-10" />
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Cómo funciona Air Fryer Chef</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Cómo funciona Chefryer</h1>
           <p className="text-sm text-ink/60 mt-0.5">Un repaso rápido a cada sección de la app.</p>
         </div>
       </div>
@@ -34,6 +34,19 @@ export default function Ayuda() {
           el <strong>Chef IA</strong>, las tendrá en cuenta automáticamente y te dirá qué porcentaje de ingredientes ya
           tienes.
         </p>
+      </Card>
+
+      <Card className="p-5 space-y-2">
+        <h2 className="text-sm font-semibold text-ink/80">Instalar en el móvil o la tablet</h2>
+        <p className="text-sm text-ink/60">
+          <strong>Android / Chrome:</strong> abre el menú (⋮) y toca "Añadir a pantalla de inicio" o "Instalar app" — a
+          veces Chrome te lo sugiere solo.
+        </p>
+        <p className="text-sm text-ink/60">
+          <strong>iPhone / iPad (Safari):</strong> toca el icono de compartir <span aria-hidden="true">⬆️</span> y elige
+          "Añadir a pantalla de inicio". Safari no ofrece este aviso automáticamente, hay que hacerlo así.
+        </p>
+        <p className="text-xs text-ink/40">Una vez instalada, abre como cualquier otra app, sin la barra del navegador.</p>
       </Card>
     </div>
   );

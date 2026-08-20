@@ -113,10 +113,10 @@ export default function Generar() {
           </p>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0 mt-1">
-          <Link to="/chat" className="text-xs text-paprika-600 hover:underline whitespace-nowrap">
+          <Link to="/chat" className="text-xs text-teal-600 hover:underline whitespace-nowrap">
             💬 Modo chat
           </Link>
-          <Link to="/convertir" className="text-xs text-paprika-600 hover:underline whitespace-nowrap">
+          <Link to="/convertir" className="text-xs text-teal-600 hover:underline whitespace-nowrap">
             <ArrowLeftRight className="w-3.5 h-3.5 inline mr-1" />
             Convertir receta
           </Link>
@@ -126,7 +126,7 @@ export default function Generar() {
       <Card className="p-5 space-y-5">
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-ink/80 mb-2">
-            <span className="w-5 h-5 rounded-full bg-paprika-500 text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
+            <span className="w-5 h-5 rounded-full bg-teal-500 text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
               1
             </span>
             Tengo estos ingredientes <span className="text-ink/40 font-normal">(opcional)</span>
@@ -136,7 +136,7 @@ export default function Generar() {
 
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-ink/80 mb-2">
-            <span className="w-5 h-5 rounded-full bg-paprika-500 text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
+            <span className="w-5 h-5 rounded-full bg-teal-500 text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
               2
             </span>
             Elige un estilo, o escribe lo que te apetece
@@ -147,7 +147,7 @@ export default function Generar() {
             onChange={(e) => setUserRequest(e.target.value)}
             placeholder='Ej. "algo tipo kebab con pollo"…'
             rows={2}
-            className="w-full mt-3 rounded-xl border border-black/10 bg-cream/40 px-3.5 py-2.5 text-sm outline-none focus:border-paprika-400 resize-none"
+            className="w-full mt-3 rounded-xl border border-black/10 bg-cream/40 px-3.5 py-2.5 text-sm outline-none focus:border-teal-400 resize-none"
           />
         </div>
 
@@ -160,13 +160,13 @@ export default function Generar() {
             value={maxTime}
             onChange={(e) => setMaxTime(e.target.value === '' ? '' : Number(e.target.value))}
             placeholder="min"
-            className="w-20 rounded-lg border border-black/10 px-2 py-1.5 text-sm outline-none focus:border-paprika-400"
+            className="w-20 rounded-lg border border-black/10 px-2 py-1.5 text-sm outline-none focus:border-teal-400"
           />
         </div>
 
         {error && <p className="text-sm text-warn">{error}</p>}
 
-        <Button onClick={() => handleGenerate()} disabled={loading} className="w-full md:w-auto">
+        <Button onClick={() => handleGenerate()} disabled={loading} variant="warm" className="w-full md:w-auto">
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" /> Pensando recetas…

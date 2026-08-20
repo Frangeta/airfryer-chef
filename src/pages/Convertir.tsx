@@ -45,7 +45,7 @@ export default function Convertir() {
     <div className="max-w-2xl mx-auto px-4 md:px-0 py-6 space-y-5">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
-          <ArrowLeftRight className="w-6 h-6 text-paprika-500" /> Convertir receta a Air Fryer
+          <ArrowLeftRight className="w-6 h-6 text-teal-500" /> Convertir receta a Air Fryer
         </h1>
         <p className="text-sm text-ink/60 mt-1">Pega una receta tradicional (horno, sartén…) y te digo cómo adaptarla a tu Gourmia.</p>
       </div>
@@ -56,10 +56,10 @@ export default function Convertir() {
           onChange={(e) => setText(e.target.value)}
           placeholder='Ej. "Pollo al horno a 200 ºC durante 40 minutos, con patatas alrededor."'
           rows={5}
-          className="w-full rounded-xl border border-black/10 bg-cream/40 px-3.5 py-2.5 text-sm outline-none focus:border-paprika-400 resize-none"
+          className="w-full rounded-xl border border-black/10 bg-cream/40 px-3.5 py-2.5 text-sm outline-none focus:border-teal-400 resize-none"
         />
         {error && <p className="text-sm text-warn">{error}</p>}
-        <Button onClick={handleConvert} disabled={loading}>
+        <Button onClick={handleConvert} disabled={loading} variant="warm">
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" /> Convirtiendo…
@@ -79,10 +79,10 @@ export default function Convertir() {
             </div>
           )}
           <div className="flex flex-wrap gap-2">
-            <Badge variant="paprika">
+            <Badge variant="teal">
               <ThermometerSun className="w-3 h-3" /> {result.recommended_temp_c} ºC
             </Badge>
-            <Badge variant="paprika">
+            <Badge variant="teal">
               <Clock className="w-3 h-3" /> {result.recommended_time_min} min
             </Badge>
             <Badge variant={result.recommended_zone === 'CUALQUIERA' ? 'neutral' : result.recommended_zone === 'CESTA_1' ? 'basket1' : 'basket2'}>
@@ -99,7 +99,7 @@ export default function Convertir() {
         </Card>
       )}
 
-      <Link to="/generar" className="text-sm text-paprika-600 hover:underline inline-block">
+      <Link to="/generar" className="text-sm text-teal-600 hover:underline inline-block">
         ← Volver al Chef IA
       </Link>
     </div>

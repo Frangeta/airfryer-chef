@@ -84,7 +84,7 @@ export default function Dashboard() {
                 );
               })}
             </div>
-            <Link to="/recetario" className="text-xs text-paprika-600 flex items-center gap-0.5 hover:underline shrink-0">
+            <Link to="/recetario" className="text-xs text-teal-600 flex items-center gap-0.5 hover:underline shrink-0">
               Ver recetario <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
@@ -98,7 +98,7 @@ export default function Dashboard() {
         <Card className="p-8 text-center">
           <p className="text-sm text-ink/50">
             Aún no tienes recetas.{' '}
-            <Link to="/generar" className="text-paprika-600 underline">
+            <Link to="/generar" className="text-teal-600 underline">
               Genera la primera con el Chef IA
             </Link>{' '}
             o ve a Configuración para cargar los datos iniciales si es la primera vez que abres la app.
@@ -110,7 +110,7 @@ export default function Dashboard() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-ink/85 text-sm">Tabla rápida</h2>
-            <Link to="/tablas" className="text-xs text-paprika-600 flex items-center gap-0.5 hover:underline">
+            <Link to="/tablas" className="text-xs text-teal-600 flex items-center gap-0.5 hover:underline">
               Ver todo <ArrowRight className="w-3 h-3" />
             </Link>
           </div>

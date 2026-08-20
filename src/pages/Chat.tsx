@@ -81,7 +81,7 @@ export default function Chat() {
         <h1 className="text-xl font-semibold tracking-tight flex items-center gap-2">
           <ChefHat className="w-5 h-5 text-paprika-500" /> Chef IA · Chat
         </h1>
-        <Link to="/generar" className="text-xs text-paprika-600 hover:underline">
+        <Link to="/generar" className="text-xs text-teal-600 hover:underline">
           Modo generador rápido
         </Link>
       </div>
@@ -92,7 +92,7 @@ export default function Chat() {
             <div className="max-w-[85%] space-y-2">
               <div
                 className={`rounded-2xl px-4 py-2.5 text-sm ${
-                  m.role === 'user' ? 'bg-paprika-500 text-white rounded-br-sm' : 'bg-paper shadow-card rounded-bl-sm text-ink/85'
+                  m.role === 'user' ? 'bg-teal-500 text-white rounded-br-sm' : 'bg-paper shadow-card rounded-bl-sm text-ink/85'
                 }`}
               >
                 {m.content}
@@ -122,7 +122,7 @@ export default function Chat() {
       {messages.length === 1 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {STARTERS.map((s) => (
-            <button key={s} onClick={() => send(s)} className="text-xs rounded-full border border-black/10 px-3 py-1.5 hover:border-paprika-400">
+            <button key={s} onClick={() => send(s)} className="text-xs rounded-full border border-black/10 px-3 py-1.5 hover:border-teal-400">
               {s}
             </button>
           ))}
@@ -135,7 +135,7 @@ export default function Chat() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
           placeholder="Escribe tu mensaje…"
-          className="flex-1 rounded-xl border border-black/10 bg-paper px-4 py-2.5 text-sm outline-none focus:border-paprika-400"
+          className="flex-1 rounded-xl border border-black/10 bg-paper px-4 py-2.5 text-sm outline-none focus:border-teal-400"
         />
         <Button onClick={() => send()} disabled={loading} aria-label="Enviar">
           <Send className="w-4 h-4" />

@@ -27,10 +27,10 @@ export function OnboardingBanner() {
   if (dismissed) return null;
 
   return (
-    <Card className="p-5 space-y-4 border border-paprika-200">
+    <Card className="p-5 space-y-4 border border-teal-200">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Compass className="w-4 h-4 text-paprika-500" />
+          <Compass className="w-4 h-4 text-teal-500" />
           <h2 className="text-sm font-semibold text-ink/80">Un vistazo rápido a la app</h2>
         </div>
         <button onClick={dismiss} aria-label="Cerrar" className="text-ink/30 hover:text-ink/60">
@@ -51,7 +51,7 @@ export function OnboardingBanner() {
         ))}
       </div>
       <div className="flex items-center justify-between pt-1">
-        <Link to="/ayuda" className="text-xs text-paprika-600 hover:underline">
+        <Link to="/ayuda" className="text-xs text-teal-600 hover:underline">
           Ver la guía completa →
         </Link>
         <button onClick={dismiss} className="text-xs text-ink/40 hover:underline">

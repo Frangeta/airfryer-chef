@@ -77,7 +77,7 @@ export default function Recetario() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Buscar en mis recetas…"
-            className="w-full rounded-xl border border-black/10 bg-cream/40 pl-9 pr-3.5 py-2.5 text-sm outline-none focus:border-paprika-400"
+            className="w-full rounded-xl border border-black/10 bg-cream/40 pl-9 pr-3.5 py-2.5 text-sm outline-none focus:border-teal-400"
           />
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -109,7 +109,7 @@ export default function Recetario() {
       {!loading && rows.length === 0 && (
         <p className="text-sm text-ink/40 text-center py-10">
           Aún no tienes recetas guardadas con estos filtros. Prueba el{' '}
-          <Link to="/generar" className="text-paprika-600 underline">
+          <Link to="/generar" className="text-teal-600 underline">
             Chef IA
           </Link>
           .

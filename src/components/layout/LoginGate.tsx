@@ -42,7 +42,7 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col items-center gap-6 text-center">
           <BasketMark className="w-16 h-16" />
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Air Fryer Chef</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Chefryer</h1>
             <p className="text-sm text-ink/55 mt-1.5">Entra para ver qué cocinamos hoy.</p>
           </div>
           <button
@@ -74,8 +74,8 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
     return (
       <GateShell>
         <div className="flex flex-col items-center gap-4 text-center bg-paper/90 backdrop-blur rounded-2xl shadow-pop px-6 py-8">
-          <div className="w-12 h-12 rounded-full bg-paprika-50 flex items-center justify-center">
-            <Database className="w-6 h-6 text-paprika-500" />
+          <div className="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center">
+            <Database className="w-6 h-6 text-teal-500" />
           </div>
           <div>
             <h1 className="text-lg font-semibold">Configurar control de acceso</h1>

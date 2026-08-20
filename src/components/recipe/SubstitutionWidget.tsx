@@ -16,9 +16,9 @@ const CATEGORY_LABEL: Record<string, string> = {
   POSIBLE_CAMBIA_SABOR: 'Cambia el sabor',
   NO_RECOMENDABLE: 'No recomendable'
 };
-const CATEGORY_VARIANT: Record<string, 'gold' | 'paprika' | 'warn'> = {
+const CATEGORY_VARIANT: Record<string, 'gold' | 'teal' | 'warn'> = {
   EQUIVALENTE: 'gold',
-  POSIBLE_CAMBIA_SABOR: 'paprika',
+  POSIBLE_CAMBIA_SABOR: 'teal',
   NO_RECOMENDABLE: 'warn'
 };
 
@@ -53,7 +53,7 @@ export function SubstitutionWidget({
 
   return (
     <div className="mt-1">
-      <button onClick={handleOpen} className="text-xs text-paprika-600 hover:underline flex items-center gap-1">
+      <button onClick={handleOpen} className="text-xs text-teal-600 hover:underline flex items-center gap-1">
         <Repeat2 className="w-3 h-3" /> ¿No tienes {ingredientName.toLowerCase()}?
       </button>
 
