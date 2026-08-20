@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ChefHat, House, BookOpen, Sparkles, CookingPot, Table2, Plus, Settings, LogOut } from 'lucide-react';
+import { House, BookOpen, Sparkles, CookingPot, Table2, Plus, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/AuthProvider';
+import { BasketMark } from '@/components/ui/BasketMark';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Inicio', icon: House },
@@ -19,7 +20,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col">
       <header className="hidden md:flex items-center justify-between px-8 h-16 border-b border-black/5 bg-paper/70 backdrop-blur sticky top-0 z-30">
         <Link to="/" className="flex items-center gap-2 font-semibold text-lg tracking-tight">
-          <ChefHat className="w-6 h-6 text-paprika-500" strokeWidth={2.25} />
+          <BasketMark className="w-6 h-6" />
           Air Fryer Chef
         </Link>
         <nav className="flex items-center gap-1">
@@ -66,7 +67,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <header className="md:hidden flex items-center justify-between px-4 h-14 border-b border-black/5 bg-paper/70 backdrop-blur sticky top-0 z-30">
         <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <ChefHat className="w-5 h-5 text-paprika-500" strokeWidth={2.25} />
+          <BasketMark className="w-5 h-5" />
           Air Fryer Chef
         </Link>
         <div className="flex items-center gap-1.5">

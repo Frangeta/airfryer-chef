@@ -8,6 +8,34 @@ casi siempre cambian a la vez.
 
 ---
 
+## [1.7.0] — Identidad visual: marca, favicon, pantalla de acceso
+
+**Añadido**
+- `BasketMark`: la marca de la app (dos cestas superpuestas, ámbar y verde —
+  los mismos colores del timeline de doble cesta), usada como elemento
+  recurrente en vez de un icono genérico de chef.
+- Favicon (`public/favicon.svg`) con esa misma marca.
+- Icono oficial de Google en el botón de inicio de sesión (antes era un
+  icono genérico de "entrar").
+
+**Cambiado**
+- Pantalla de acceso (`LoginGate.tsx`) rediseñada por completo: fondo con
+  dos manchas de color desenfocadas (ámbar/verde), la marca grande,
+  tipografía y copy más cuidados. Las cuatro pantallas de estado (cargando,
+  entrar, inicializar, pendiente) comparten ahora el mismo tratamiento
+  visual (`GateShell`).
+- Navegación (`AppShell.tsx`): el icono de chef genérico se sustituye por
+  `BasketMark` junto al nombre de la app.
+- Caja "¿Qué quieres cocinar?" del Dashboard: marca fantasma de fondo en la
+  esquina, muy sutil, para dar textura sin distraer.
+- Tarjetas de acceso rápido del Dashboard: cada una con su propio color
+  (pimentón, ámbar, verde, dorado) en vez de todas iguales — más ritmo
+  visual en la rejilla sin añadir ruido.
+
+**Archivos clave**: `src/components/ui/BasketMark.tsx` (nuevo), `src/components/ui/GoogleIcon.tsx` (nuevo), `src/components/layout/LoginGate.tsx`, `src/components/layout/AppShell.tsx`, `src/components/dashboard/DashboardPromptBox.tsx`, `src/pages/Dashboard.tsx`, `index.html`, `public/favicon.svg`.
+
+---
+
 ## [1.6.0] — Favoritos de alimentos y preferencias aprendidas visibles
 
 **Añadido**

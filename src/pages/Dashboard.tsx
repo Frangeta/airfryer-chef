@@ -35,10 +35,10 @@ export default function Dashboard() {
       <DashboardPromptBox />
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <ShortcutCard to="/generar" icon={<CookingPot className="w-5 h-5" />} label="Tengo estos ingredientes" />
-        <ShortcutCard to="/chat" icon={<MessageCircle className="w-5 h-5" />} label="Chef IA en modo chat" />
-        <ShortcutCard to="/tablas" icon={<Table2 className="w-5 h-5" />} label="Tabla rápida" />
-        <ShortcutCard to="/despensa" icon={<CookingPot className="w-5 h-5" />} label="Mi despensa" />
+        <ShortcutCard to="/generar" icon={<CookingPot className="w-5 h-5" />} label="Tengo estos ingredientes" variant="paprika" />
+        <ShortcutCard to="/chat" icon={<MessageCircle className="w-5 h-5" />} label="Chef IA en modo chat" variant="basket2" />
+        <ShortcutCard to="/tablas" icon={<Table2 className="w-5 h-5" />} label="Tabla rápida" variant="basket1" />
+        <ShortcutCard to="/despensa" icon={<CookingPot className="w-5 h-5" />} label="Mi despensa" variant="gold" />
       </section>
 
       {favorites.length > 0 && (
@@ -125,11 +125,28 @@ function Section({ title, to, children }: { title: string; to: string; children:
   );
 }
 
-function ShortcutCard({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) {
+const SHORTCUT_VARIANTS: Record<string, string> = {
+  paprika: 'bg-paprika-50 text-paprika-600',
+  basket1: 'bg-basket1-light text-basket1-dark',
+  basket2: 'bg-basket2-light text-basket2-dark',
+  gold: 'bg-gold-100 text-gold-600'
+};
+
+function ShortcutCard({
+  to,
+  icon,
+  label,
+  variant = 'paprika'
+}: {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  variant?: keyof typeof SHORTCUT_VARIANTS;
+}) {
   return (
     <Link to={to}>
       <Card className="p-4 flex flex-col gap-2 hover:shadow-pop transition-shadow h-full">
-        <div className="w-9 h-9 rounded-lg bg-paprika-50 text-paprika-600 flex items-center justify-center">{icon}</div>
+        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${SHORTCUT_VARIANTS[variant]}`}>{icon}</div>
         <span className="text-sm font-medium text-ink/80">{label}</span>
       </Card>
     </Link>

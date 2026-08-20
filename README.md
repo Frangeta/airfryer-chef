@@ -1,6 +1,6 @@
 # Air Fryer Chef — despliegue en GitHub Pages + Firebase
 
-> Versión actual: **1.6.0** — ver [`CHANGELOG.md`](./CHANGELOG.md) para el historial completo.
+> Versión actual: **1.7.0** — ver [`CHANGELOG.md`](./CHANGELOG.md) para el historial completo.
 
 No se instala en local: se despliega en **GitHub Pages** (frontend estático),
 usa **Firestore** (Firebase) como base de datos, **Firebase Auth** (Google)
