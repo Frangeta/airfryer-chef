@@ -13,11 +13,73 @@ import {
   limit as fsLimit,
   serverTimestamp,
   arrayUnion,
+  arrayRemove,
+  deleteField,
   writeBatch
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase/firebase';
 import { synchronizeDualBasket } from '@/lib/dualBasket/sync';
 import { SYSTEM_CATEGORIES, type AIRecipe } from '@/types';
+
+// ---------------------------------------------------------------------------
+// Control de acceso — config/access
+// ---------------------------------------------------------------------------
+// Lista de personas autorizadas, gestionada en tiempo real desde la propia
+// app (sin tocar secretos de GitHub/Cloudflare ni reglas de Firestore para
+// cada persona nueva). Solo la creación inicial del documento está reservada
+// a los administradores "raíz" definidos en firestore.rules — a partir de
+// ahí, cualquier aprobación posterior es un simple clic en Configuración.
+
+const ACCESS_DOC = ['config', 'access'] as const;
+
+export interface AccessDoc {
+  allowedUids: string[];
+  pendingRequests: Record<string, { name: string; email: string; requestedAt: string }>;
+  members?: Record<string, { name: string; email: string }>;
+}
+
+export async function getAccessDoc(): Promise<AccessDoc | null> {
+  const snap = await getDoc(doc(db, ...ACCESS_DOC));
+  return snap.exists() ? (snap.data() as AccessDoc) : null;
+}
+
+/** Solo funciona si quien llama es uno de los administradores raíz (ver firestore.rules). */
+export async function initAccessDoc(uid: string, name: string, email: string) {
+  await setDoc(doc(db, ...ACCESS_DOC), {
+    allowedUids: [uid],
+    pendingRequests: {},
+    members: { [uid]: { name, email } }
+  });
+}
+
+/** La persona sin acceso todavía registra su propia solicitud (solo puede tocar su propia entrada). */
+export async function requestAccess(uid: string, name: string, email: string) {
+  await updateDoc(doc(db, ...ACCESS_DOC), {
+    [`pendingRequests.${uid}`]: { name, email, requestedAt: new Date().toISOString() }
+  });
+}
+
+/** El propietario aprueba: mueve el uid de pendiente a autorizado. */
+export async function approveAccess(uid: string) {
+  const accessDoc = await getAccessDoc();
+  const req = accessDoc?.pendingRequests?.[uid];
+  await updateDoc(doc(db, ...ACCESS_DOC), {
+    allowedUids: arrayUnion(uid),
+    [`pendingRequests.${uid}`]: deleteField(),
+    ...(req ? { [`members.${uid}`]: { name: req.name, email: req.email } } : {})
+  });
+}
+
+/** Descarta una solicitud sin darle acceso. */
+export async function rejectAccessRequest(uid: string) {
+  await updateDoc(doc(db, ...ACCESS_DOC), { [`pendingRequests.${uid}`]: deleteField() });
+}
+
+/** Quita el acceso a alguien que ya lo tenía. */
+export async function revokeAccess(uid: string) {
+  await updateDoc(doc(db, ...ACCESS_DOC), { allowedUids: arrayRemove(uid) });
+}
+
 
 // ---------------------------------------------------------------------------
 // Alimentos y modelos de Air Fryer (catálogo compartido, colecciones raíz)

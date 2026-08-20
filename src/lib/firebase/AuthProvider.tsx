@@ -1,29 +1,60 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
-import { auth, googleProvider, OWNER_UIDS } from './firebase';
-import { ensureUserDoc } from '@/services/db';
+import { auth, googleProvider } from './firebase';
+import { ensureUserDoc, getAccessDoc, requestAccess, type AccessDoc } from '@/services/db';
+
+export type AccessStatus = 'loading' | 'signed-out' | 'no-access-doc' | 'pending' | 'approved';
 
 interface AuthState {
   user: User | null;
-  loading: boolean;
-  isOwner: boolean;
+  status: AccessStatus;
+  accessDoc: AccessDoc | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  refreshAccess: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<AccessStatus>('loading');
+  const [accessDoc, setAccessDoc] = useState<AccessDoc | null>(null);
+
+  async function evaluateAccess(u: User) {
+    let doc: AccessDoc | null = null;
+    try {
+      doc = await getAccessDoc();
+    } catch {
+      doc = null;
+    }
+    setAccessDoc(doc);
+
+    if (!doc) {
+      setStatus('no-access-doc');
+      return;
+    }
+    if (doc.allowedUids.includes(u.uid)) {
+      await ensureUserDoc(u.uid, u.displayName ?? 'Chef').catch(console.error);
+      setStatus('approved');
+      return;
+    }
+    if (!doc.pendingRequests?.[u.uid]) {
+      await requestAccess(u.uid, u.displayName ?? '', u.email ?? '').catch(console.error);
+    }
+    setStatus('pending');
+  }
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
       setUser(u);
-      setLoading(false);
-      if (u && OWNER_UIDS.includes(u.uid)) {
-        ensureUserDoc(u.uid, u.displayName ?? 'Chef').catch(console.error);
+      if (!u) {
+        setStatus('signed-out');
+        setAccessDoc(null);
+        return;
       }
+      setStatus('loading');
+      await evaluateAccess(u);
     });
     return unsub;
   }, []);
@@ -34,10 +65,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function logout() {
     await signOut(auth);
   }
+  async function refreshAccess() {
+    if (user) await evaluateAccess(user);
+  }
 
-  const isOwner = !!user && OWNER_UIDS.includes(user.uid);
-
-  return <AuthContext.Provider value={{ user, loading, isOwner, login, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, status, accessDoc, login, logout, refreshAccess }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

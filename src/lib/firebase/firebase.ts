@@ -15,12 +15,3 @@ export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
-
-// Usuarios permitidos. VITE_OWNER_UID admite uno o varios UID separados por
-// comas (p.ej. "uid1,uid2"). Las reglas de seguridad de Firestore Y el Worker
-// de la IA comprueban esta misma lista — así "el backend" sabe exactamente
-// para quién está configurada la clave de IA, sin que nadie más pueda usarla.
-export const OWNER_UIDS: string[] = ((import.meta.env.VITE_OWNER_UID as string) || '')
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean);

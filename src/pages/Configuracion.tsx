@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Save, Database, Check } from 'lucide-react';
+import { Save, Database, Check, UserCheck, UserX, Users } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/AuthProvider';
 import * as repo from '@/services/db';
 import { runInitialSeed } from '@/services/seed';
@@ -13,7 +13,8 @@ const DIFFICULTY_LABEL: Record<string, string> = { FACIL: 'Fácil', MEDIA: 'Medi
 const DIET_OPTIONS = ['Vegetariano', 'Vegano', 'Sin gluten', 'Sin lactosa', 'Bajo en sal', 'Bajo en grasa'];
 
 export default function Configuracion() {
-  const { user } = useAuth();
+  const { user, accessDoc, refreshAccess } = useAuth();
+  const [approving, setApproving] = useState<string | null>(null);
   const [models, setModels] = useState<any[]>([]);
   const [airFryerModelId, setAirFryerModelId] = useState('');
   const [defaultServings, setDefaultServings] = useState(4);
@@ -71,6 +72,24 @@ export default function Configuracion() {
     setSeedStatus('done');
   }
 
+  async function handleApprove(uid: string) {
+    setApproving(uid);
+    await repo.approveAccess(uid);
+    await refreshAccess();
+    setApproving(null);
+  }
+  async function handleReject(uid: string) {
+    await repo.rejectAccessRequest(uid);
+    await refreshAccess();
+  }
+  async function handleRevoke(uid: string) {
+    if (!window.confirm('¿Quitar el acceso a esta persona?')) return;
+    await repo.revokeAccess(uid);
+    await refreshAccess();
+  }
+
+  const pendingEntries = Object.entries(accessDoc?.pendingRequests ?? {});
+
   if (loading) return <div className="text-center py-16 text-ink/40">Cargando ajustes…</div>;
 
   return (
@@ -79,6 +98,55 @@ export default function Configuracion() {
         <h1 className="text-2xl font-semibold tracking-tight">Configuración</h1>
         <p className="text-sm text-ink/60 mt-1">Esto ajusta cómo la IA genera y adapta tus recetas.</p>
       </div>
+
+      <Card className="p-5 space-y-4">
+        <h2 className="text-sm font-semibold text-ink/70 flex items-center gap-1.5">
+          <Users className="w-4 h-4" /> Acceso y personas
+        </h2>
+
+        {pendingEntries.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs text-ink/50">Solicitudes pendientes</p>
+            {pendingEntries.map(([uid, req]) => (
+              <div key={uid} className="flex items-center justify-between rounded-xl border border-gold-300 bg-gold-100/40 px-3 py-2">
+                <div className="text-sm">
+                  <div className="font-medium text-ink/85">{req.name || 'Sin nombre'}</div>
+                  <div className="text-xs text-ink/50">{req.email}</div>
+                </div>
+                <div className="flex gap-1.5">
+                  <Button size="sm" onClick={() => handleApprove(uid)} disabled={approving === uid}>
+                    <UserCheck className="w-3.5 h-3.5" /> Aprobar
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => handleReject(uid)}>
+                    <UserX className="w-3.5 h-3.5" /> Rechazar
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <p className="text-xs text-ink/50">Con acceso ({accessDoc?.allowedUids.length ?? 0})</p>
+          {(accessDoc?.allowedUids ?? []).map((uid) => (
+            <div key={uid} className="flex items-center justify-between rounded-xl border border-black/10 px-3 py-2">
+              <span className="text-sm text-ink/70">
+                {uid === user?.uid ? 'Tú' : accessDoc?.members?.[uid]?.name || accessDoc?.members?.[uid]?.email || uid.slice(0, 10) + '…'}
+              </span>
+              {uid !== user?.uid && (
+                <button onClick={() => handleRevoke(uid)} className="text-xs text-warn hover:underline">
+                  Quitar acceso
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <p className="text-xs text-ink/40">
+          Comparte el enlace de la app con quien quieras invitar — cuando inicie sesión con Google, su solicitud
+          aparecerá aquí para que la apruebes.
+        </p>
+      </Card>
 
       {models.length === 0 && (
         <Card className="p-5 space-y-3 border border-paprika-200">
