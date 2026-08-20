@@ -1,74 +1,176 @@
-# Arquitectura — versión GitHub Pages + Firebase
+# Arquitectura — Air Fryer Chef (GitHub Pages + Firebase)
 
-Esta es la adaptación de Air Fryer Chef para desplegarse sin servidor propio.
-El diseño de producto (algoritmo de doble cesta, validación de recetas de IA,
-reglas de seguridad alimentaria, escalado de comensales, componentes visuales)
-es el mismo que en la versión Next.js/Prisma — lo que cambia es dónde vive
-cada pieza.
+> Refleja la versión **1.6.0**. Para el porqué de cada cambio de versión, ver [`CHANGELOG.md`](./CHANGELOG.md).
 
-## Qué se reaprovechó tal cual
+Esta es la versión de Air Fryer Chef pensada para desplegarse sin servidor
+propio. El diseño de producto (algoritmo de doble cesta, validación de
+recetas de IA, reglas de seguridad alimentaria, escalado de comensales) es
+el mismo desde el diseño original — lo que ha ido cambiando es dónde vive
+cada pieza y, más recientemente, quién puede usar la app.
+
+## Qué se reaprovechó de la versión original (Next.js/Prisma)
 
 Toda la lógica pura, sin dependencias de framework ni de base de datos:
-- `src/lib/dualBasket/sync.ts` — algoritmo de sincronización.
+- `src/lib/dualBasket/sync.ts` — algoritmo de sincronización de doble cesta.
 - `src/lib/validation/recipeValidator.ts` — validador de recetas de IA.
 - `src/lib/foodSafety/rules.ts` — reglas de seguridad alimentaria.
 - `src/lib/scaling.ts` — escalado de cantidades por comensales.
 - `src/types/index.ts` — esquemas zod (contexto de IA, receta estructurada).
-- Todos los componentes visuales (`DualBasketTimeline`, `RecipeCard`, `Badge`,
-  `Chip`, etc.) — solo se les quitaron las importaciones de Next.js.
+- Los componentes visuales (`DualBasketTimeline`, `RecipeCard`, `Badge`, `Chip`...).
 
-## Qué cambió y por qué
+## Capas de la arquitectura actual
 
-### Frontend: Next.js → Vite + React Router
+```
+Frontend (Vite + React + React Router) — GitHub Pages
+   │
+   ├─► Firestore + Firebase Auth — datos y sesión, directo desde el navegador
+   │
+   └─► Worker de Cloudflare — único lugar con la clave de Groq en secreto
+              │
+              └─► api.groq.com
+```
+
+### Frontend: Vite + React Router (no Next.js)
 Un sitio estático no tiene servidor que renderice Server Components ni
-resuelva API routes. Vite + React Router es el estándar para SPAs en GitHub
-Pages: sin `basePath` de Next, sin las limitaciones de rutas dinámicas del
-export estático. Las URLs con parámetro (`/recetas/:id`) funcionan tras una
-recarga gracias al truco `spa-github-pages` (`public/404.html` +
-`index.html`), documentado con comentarios en ambos archivos.
+resuelva API routes, así que se sustituyó Next.js por Vite + React Router:
+sin `basePath` propio de Next, sin las limitaciones de rutas dinámicas del
+export estático. Las URLs con parámetro (`/recetas/:id`) sobreviven a una
+recarga en GitHub Pages gracias al truco `spa-github-pages`
+(`public/404.html` + script en `index.html`, documentado con comentarios en
+ambos archivos).
 
-### Base de datos: Prisma/SQL → Firestore
-El modelo relacional se aplanó a documentos, favoreciendo la denormalización
-que Firestore recompensa:
-- `recipes/{id}` — receta completa con ingredientes, pasos y zonas de doble
-  cesta como arrays embebidos (antes eran tablas separadas).
-- `users/{uid}/userRecipes/{recipeId}` — guarda un resumen (`summary`) de la
-  receta directamente en el documento del recetario, para poder listar el
-  recetario con una sola lectura de colección en vez de una lectura por
-  receta guardada.
-- Valoraciones y notas son arrays dentro del propio `userRecipe` (antes,
-  tablas `UserRecipeRating`/`UserRecipeNote`), porque Firestore no premia las
-  relaciones muchos-a-uno de la misma forma que SQL.
+### Base de datos: Firestore (no SQL/Prisma)
+El modelo relacional original se aplanó a documentos, favoreciendo la
+denormalización que Firestore recompensa:
 
-### IA: API route de Next.js → Worker de Cloudflare
-Un sitio estático no puede guardar un secreto (la clave de Claude) en ningún
-sitio del propio sitio — cualquier cosa en el bundle del navegador es
-pública. El Worker es la única pieza con estado de servidor: recibe el
-contexto estructurado, reconstruye exactamente las mismas llamadas con
-*tool use* forzado que antes hacía `ClaudeProvider`, y devuelve JSON validado.
+- **`airFryerModels/{id}`**, **`foods/{id}`** — catálogo compartido entre
+  todas las personas con acceso. Cada `food` incluye su `cookingProfile`
+  embebido (antes era una tabla `FoodCookingProfile` aparte).
+- **`recipes/{id}`** — receta completa con `ingredients[]`, `steps[]` y
+  `zones[]` (doble cesta) embebidos como arrays, no como tablas separadas.
+- **`users/{uid}`** — documento de cada persona: `preference` (comensales,
+  dificultad, exclusiones...), `categories[]` (sistema + personalizadas),
+  `airFryerModelId`, `favoriteFoodIds[]`.
+- **`users/{uid}/userRecipes/{recipeId}`** — el recetario personal: guarda
+  un **resumen desnormalizado** (`summary`) de la receta directamente aquí,
+  para poder listar el recetario con una sola lectura de colección en vez de
+  una lectura por receta guardada. `ratings[]` y `notes[]` son arrays dentro
+  de este mismo documento (antes, tablas `UserRecipeRating`/`UserRecipeNote`).
+- **`users/{uid}/pantry/{itemId}`**, **`users/{uid}/conversations/{id}/messages/{id}`**,
+  **`users/{uid}/derivedPreferences/{id}`** — el resto de datos personales.
+- **`config/access`** — documento único (no por usuario) con la lista de
+  acceso: ver la sección de control de acceso más abajo.
 
-**Seguridad del Worker** (ver `worker/src/`):
+### IA: Worker de Cloudflare (no API routes de Next.js)
+Un sitio estático no puede guardar un secreto en ningún sitio del propio
+sitio — cualquier cosa en el bundle del navegador es pública. El Worker es
+la única pieza con estado de servidor: recibe el contexto estructurado,
+arma el prompt, llama a Groq pidiendo JSON forzado (equivalente al
+*tool use* forzado que hacía `ClaudeProvider` en la versión original con
+Prisma), valida la respuesta con los mismos esquemas zod, y la devuelve.
+
+**Por qué Groq y no Claude o Gemini**: el brief original pedía no usar una
+IA de pago; se probó primero Google Gemini (gratuito) pero sus modelos más
+recientes introducían minutos de latencia por "razonamiento extendido" antes
+de responder, incluso desactivándolo. Groq resuelve las mismas peticiones en
+segundos gracias a su hardware especializado (LPU), y también es gratuito
+sin tarjeta. Ver `CHANGELOG.md` v1.1.0/v1.2.0 para el detalle de ambas
+migraciones.
+
+**Seguridad del Worker** (`worker/src/`):
 1. CORS restringido a un único origen (`ALLOWED_ORIGIN`).
 2. Verificación de la firma del ID token de Firebase con `jose` contra el
    JWKS público de Google — sin SDK de Node, compatible con el runtime de
-   Workers.
-3. Comprobación de que el `uid` del token coincide con `ALLOWED_UID` — así la
-   clave de Anthropic solo se usa para ti, nunca para quien encuentre la URL
-   del Worker o inspeccione el tráfico de red del sitio público.
+   Workers (`verifyFirebaseToken.ts`).
+3. Comprobación de que el `uid` del token está en `config/access.allowedUids`
+   — consultado en tiempo real vía la API REST de Firestore, autenticada con
+   el mismo ID token del usuario (`isUidApproved()` en `index.ts`). El Worker
+   no tiene ningún secreto de "quién puede entrar": esa decisión vive
+   enteramente en Firestore.
 
-### Autenticación: ninguna → Firebase Auth (Google, un solo usuario)
-Necesaria por dos motivos: para que las reglas de seguridad de Firestore
-puedan distinguir "tú" de "cualquiera", y para que el Worker tenga algo que
-verificar. Se restringe a un único UID tanto en `firestore.rules` como en el
-Worker — están pensadas para mantenerse sincronizadas manualmente (mismo UID
-en ambos sitios), documentado en el README.
+### Seed de datos: botón en la app (no script de Node)
+Sin servidor local, no hay dónde correr un script de seed tradicional. La
+misma lógica de datos iniciales (modelo Gourmia, alimentos, recetas de
+ejemplo) vive en `src/services/seed.ts` y se ejecuta con el SDK cliente de
+Firestore, con las credenciales de la propia sesión ya autenticada — de ahí
+que sea un botón en Configuración en vez de un script.
 
-### Seed: script de Node con Prisma → botón en la app
-Sin servidor local, no hay dónde correr `npx prisma db seed`. La misma lógica
-de datos iniciales (modelo Gourmia, alimentos, recetas de ejemplo) vive ahora
-en `src/services/seed.ts` y se ejecuta con el SDK cliente de Firestore, con
-las credenciales de tu propia sesión ya autenticada — de ahí que sea un botón
-en Configuración en vez de un script.
+## Control de acceso — multiusuario dinámico
+
+Este es el área que más ha evolucionado (ver v1.3.0 → v1.5.0 en el
+changelog). El diseño actual:
+
+```
+                    ┌─────────────────────────────────┐
+                    │  firestore.rules                  │
+                    │  rootAdminUids() = ['uid_fijo']    │  ← solo para bootstrap
+                    └────────────┬────────────────────┘
+                                 │ puede crear/recrear
+                                 ▼
+                    ┌─────────────────────────────────┐
+                    │  config/access (Firestore)         │
+                    │  { allowedUids: [...],              │
+                    │    pendingRequests: {...},          │
+                    │    members: {...} }                 │  ← fuente de verdad real
+                    └────────────┬────────────────────┘
+                                 │ leído por
+              ┌──────────────────┼──────────────────┐
+              ▼                  ▼                  ▼
+        Firestore rules     Frontend            Worker de Cloudflare
+        (isApproved())      (AuthProvider)       (isUidApproved())
+```
+
+- **`rootAdminUids()`** en `firestore.rules`: una lista mínima y estática de
+  UIDs, con permiso para **crear** `config/access` la primera vez (o
+  recrearlo si se corrompe). No se usa para nada más — no gestiona el día a
+  día.
+- **`config/access`**: la fuente de verdad real. `allowedUids[]` es quién
+  puede usar la app; `pendingRequests{uid: {name,email,requestedAt}}` son
+  las solicitudes de acceso pendientes; `members{uid: {name,email}}` guarda
+  el nombre/correo de cada persona aprobada, para mostrarlo en la UI en vez
+  de un UID críptico.
+- **Reglas de Firestore para `config/access`**: cualquier persona
+  autenticada puede *leer* el documento (para saber si tiene acceso) y puede
+  *escribir* únicamente su propia entrada dentro de `pendingRequests`
+  (solicitar acceso). Solo quien ya está en `allowedUids` (o es admin raíz)
+  puede tocar `allowedUids` — aprobar, rechazar o revocar.
+- **Frontend** (`AuthProvider.tsx`): tras el login, lee `config/access` y
+  calcula un estado: `no-access-doc` (primera vez, hay que inicializar),
+  `pending` (solicitud enviada, esperando aprobación), o `approved`.
+  `LoginGate.tsx` renderiza la pantalla correspondiente a cada estado.
+- **Worker**: en cada petición de IA, además de verificar la firma del ID
+  token, hace una llamada a la API REST de Firestore (con ese mismo token)
+  para comprobar si el `uid` está en `allowedUids`. Si Firestore deniega el
+  acceso (por las reglas de arriba) o el uid no está en la lista, el Worker
+  rechaza la petición.
+
+**Qué se comparte entre personas y qué no**: el catálogo (`airFryerModels`,
+`foods`) y las recetas en sí (`recipes/{id}`) son compartidos entre todas
+las personas aprobadas — pensado para parejas/familias compartiendo la
+misma Air Fryer. La despensa, favoritos, valoraciones, notas y preferencias
+de cada persona (todo bajo `users/{uid}/**`) son privados de cada una.
+
+## Gestión de recetas (edición, duplicado, categorías)
+
+Añadido en la v1.4.0. Puntos de diseño relevantes:
+- **Editar** (`updateRecipe`): al guardar cambios, `source` pasa a
+  `USER_CREATED` (aunque la receta viniera originalmente de la IA), para
+  distinguir en el futuro qué recetas han sido tocadas a mano. El `summary`
+  denormalizado en `userRecipes` se sincroniza automáticamente con los
+  campos editados.
+- **Duplicar** (`duplicateRecipe`): copia el documento completo de
+  `recipes/{id}` a uno nuevo (mismo `ingredients`/`steps`/`zones`, nombre
+  con sufijo "(copia)") y lo guarda directamente en el recetario de quien
+  duplica — no toca el original.
+- **Eliminar** (`deleteRecipe`): borra tanto la entrada del recetario
+  (`userRecipes/{id}`) como el documento de la receta en sí
+  (`recipes/{id}`). Como el modelo actual no comparte una misma receta por
+  referencia entre recetarios de distintas personas (cada "guardar" crea su
+  propia entrada), esto es seguro sin dejar referencias rotas.
+- **Categorías personalizadas**: `users/{uid}.categories[]` empieza con las
+  7 categorías del sistema (sembradas al crear el usuario) y crece con
+  `arrayUnion` cuando alguien escribe una categoría nueva desde la ficha de
+  receta — no hace falta una colección aparte.
 
 ## Diagrama de flujo (generación de receta)
 
@@ -76,23 +178,37 @@ en Configuración en vez de un script.
 Generar.tsx
   → recipeGeneration.buildAIContextForUser(uid)   [lee Firestore: users, pantry, derivedPreferences]
   → aiClient.generateRecipes(context)             [POST al Worker, con ID token de Firebase]
-      Worker: verifica token → arma prompt → llama a Anthropic (tool use forzado) → devuelve JSON
+      Worker:
+        1. verifica firma del token (jose + JWKS de Google)
+        2. comprueba uid en config/access.allowedUids (REST API de Firestore)
+        3. arma el prompt → llama a Groq (JSON forzado) → valida con zod
   → recipeValidator.validateAIRecipe(...)          [contra foods de Firestore]
   → dualBasket.synchronizeDualBasket(...)          [si is_dual_zone]
   → usuario pulsa "Guardar" → db.persistGeneratedRecipe(...)  [escribe en Firestore]
 ```
 
+> El proveedor de IA se ha cambiado dos veces (Claude → Gemini → Groq) sin
+> tocar el frontend, `recipeValidator.ts`, `dualBasket/sync.ts` ni ninguna
+> página — solo el cliente HTTP dentro de `worker/src/` y sus variables de
+> entorno. Es exactamente el problema que la interfaz `AIProvider` (versión
+> Next.js original) y, ahora, el propio Worker aislado, están pensados para
+> resolver.
+
 ## Limitaciones conocidas de este diseño
 
-- **Un solo usuario real.** El modelo de datos ya soporta más de un `uid`,
-  pero la seguridad (reglas + Worker) está deliberadamente cerrada a uno solo.
-  Abrir a más usuarios implicaría cambiar `isOwner()` por una lista de UIDs
-  o un rol en el propio documento de usuario.
 - **Sin índices compuestos.** Las consultas actuales traen la colección
-  completa y filtran en el cliente (recetario, alimentos). Es razonable para
-  el volumen de datos de un uso doméstico; con cientos de recetas convendría
-  añadir índices y mover los filtros a la consulta de Firestore.
-- **UID duplicado en dos sitios** (`firestore.rules` y el secreto
-  `ALLOWED_UID` del Worker). No hay una fuente única de verdad entre
-  Firebase y Cloudflare — es una decisión consciente para evitar acoplar
-  ambos servicios entre sí.
+  completa y filtran/ordenan en el cliente (recetario, alimentos, tabla
+  rápida). Razonable para el volumen de datos de un uso doméstico/familiar;
+  con cientos de recetas convendría añadir índices y mover los filtros a la
+  consulta de Firestore.
+- **`get()` en las reglas de Firestore tiene coste.** `isApproved()` hace una
+  lectura adicional de `config/access` en cada evaluación de regla que la
+  usa. Para el volumen de este proyecto es insignificante, pero es algo a
+  vigilar si el uso creciera mucho.
+- **Sin fotos en las recetas.** El campo existía en el esquema original de
+  Prisma pero no se ha vuelto a añadir en Firestore — requeriría activar
+  Firebase Storage (servicio adicional a configurar).
+- **`rootAdminUids()` sigue siendo estático.** Si hiciera falta cambiar quién
+  puede recrear `config/access` de emergencia, todavía requiere editar
+  `firestore.rules` a mano — decisión consciente para no tener un único
+  punto de fallo totalmente dinámico y sin ancla fija en el sistema.

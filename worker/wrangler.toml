@@ -4,11 +4,15 @@ compatibility_date = "2024-11-01"
 
 # Secretos (NUNCA van aquí en texto plano — se configuran con `wrangler secret put`
 # o en el dashboard de Cloudflare, Settings → Variables and Secrets):
-#   GEMINI_API_KEY      → tu clave gratuita de Google AI Studio
-#   ALLOWED_UID         → el UID de Firebase Auth del único usuario permitido (tú)
+#   GROQ_API_KEY        → tu clave gratuita de console.groq.com
 #   FIREBASE_PROJECT_ID → el projectId de tu proyecto Firebase
 #   ALLOWED_ORIGIN      → https://<tu-usuario>.github.io  (sin barra final)
 #
+# Ya NO hace falta ALLOWED_UIDS aquí: el Worker consulta en tiempo real el
+# documento config/access de Firestore, así que añadir o quitar personas se
+# gestiona desde la propia app (Configuración → Acceso y personas).
+#
 # Opcional (variable normal, no secreta):
-#   GEMINI_MODEL        → por defecto "gemini-2.0-flash"; cambia aquí si Google
-#                         renombra o retira ese modelo en el futuro
+#   GROQ_MODEL          → por defecto "openai/gpt-oss-120b"; cambia aquí si
+#                         Groq renombra o retira ese modelo — revisa los
+#                         modelos disponibles en console.groq.com/docs/models
