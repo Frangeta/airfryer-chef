@@ -445,8 +445,29 @@ export async function deleteRecipe(uid: string, recipeId: string) {
 }
 
 export async function listDerivedPreferences(uid: string) {
-  const snap = await getDocs(query(collection(db, 'users', uid, 'derivedPreferences'), fsLimit(10)));
-  return snap.docs.map((d) => d.data() as any);
+  const snap = await getDocs(query(collection(db, 'users', uid, 'derivedPreferences'), fsLimit(20)));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })) as any[];
+}
+
+/** Permite al usuario "olvidar" algo que la IA infirió, sin tocar sus notas originales. */
+export async function deleteDerivedPreference(uid: string, id: string) {
+  await deleteDoc(doc(db, 'users', uid, 'derivedPreferences', id));
+}
+
+// ---------------------------------------------------------------------------
+// Alimentos favoritos (tabla rápida) — array en el propio documento de
+// usuario, ya que el catálogo de alimentos es pequeño (decenas, no miles).
+// ---------------------------------------------------------------------------
+
+export async function listFavoriteFoodIds(uid: string): Promise<string[]> {
+  const userDoc = await getUserDoc(uid);
+  return userDoc?.favoriteFoodIds ?? [];
+}
+
+export async function toggleFavoriteFood(uid: string, foodId: string, isFavorite: boolean) {
+  await updateDoc(doc(db, 'users', uid), {
+    favoriteFoodIds: isFavorite ? arrayUnion(foodId) : arrayRemove(foodId)
+  });
 }
 
 // ---------------------------------------------------------------------------

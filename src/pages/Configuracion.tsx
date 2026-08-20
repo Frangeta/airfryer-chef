@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Save, Database, Check, UserCheck, UserX, Users } from 'lucide-react';
+import { Save, Database, Check, UserCheck, UserX, Users, Brain, X } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/AuthProvider';
 import * as repo from '@/services/db';
 import { runInitialSeed } from '@/services/seed';
@@ -28,23 +28,27 @@ export default function Configuracion() {
   const [saved, setSaved] = useState(false);
   const [seedStatus, setSeedStatus] = useState<'idle' | 'loading' | 'done'>('idle');
   const [loading, setLoading] = useState(true);
+  const [derivedPreferences, setDerivedPreferences] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
-    Promise.all([repo.listAirFryerModels(), repo.getUserDoc(user.uid)]).then(([airFryers, userDoc]) => {
-      setModels(airFryers);
-      if (userDoc) {
-        setAirFryerModelId(userDoc.airFryerModelId ?? '');
-        const pref = userDoc.preference ?? {};
-        setDefaultServings(pref.defaultServings ?? 4);
-        setMaxCookTimeMinutes(pref.maxCookTimeMinutes ?? '');
-        setDifficultyLevel(pref.difficultyLevel ?? 'MEDIA');
-        setExcludedIngredients(pref.excludedIngredients ?? []);
-        setAllergies(pref.allergies ?? []);
-        setDietaryPreferences(pref.dietaryPreferences ?? []);
+    Promise.all([repo.listAirFryerModels(), repo.getUserDoc(user.uid), repo.listDerivedPreferences(user.uid)]).then(
+      ([airFryers, userDoc, derived]) => {
+        setModels(airFryers);
+        if (userDoc) {
+          setAirFryerModelId(userDoc.airFryerModelId ?? '');
+          const pref = userDoc.preference ?? {};
+          setDefaultServings(pref.defaultServings ?? 4);
+          setMaxCookTimeMinutes(pref.maxCookTimeMinutes ?? '');
+          setDifficultyLevel(pref.difficultyLevel ?? 'MEDIA');
+          setExcludedIngredients(pref.excludedIngredients ?? []);
+          setAllergies(pref.allergies ?? []);
+          setDietaryPreferences(pref.dietaryPreferences ?? []);
+        }
+        setDerivedPreferences(derived);
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    );
   }, [user]);
 
   async function save() {
@@ -86,6 +90,12 @@ export default function Configuracion() {
     if (!window.confirm('¿Quitar el acceso a esta persona?')) return;
     await repo.revokeAccess(uid);
     await refreshAccess();
+  }
+
+  async function handleForgetPreference(id: string) {
+    if (!user) return;
+    setDerivedPreferences((prev) => prev.filter((p) => p.id !== id));
+    await repo.deleteDerivedPreference(user.uid, id);
   }
 
   const pendingEntries = Object.entries(accessDoc?.pendingRequests ?? {});
@@ -281,6 +291,33 @@ export default function Configuracion() {
           className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-paprika-400"
         />
       </Card>
+
+      {derivedPreferences.length > 0 && (
+        <Card className="p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-ink/70 flex items-center gap-1.5">
+            <Brain className="w-4 h-4" /> Lo que la IA ha aprendido de ti
+          </h2>
+          <p className="text-xs text-ink/50">
+            Se genera a partir de tus notas con ajustes concretos en las recetas, y se usa como contexto al generar
+            nuevas propuestas — nunca cambia los datos generales de la app.
+          </p>
+          <ul className="space-y-2">
+            {derivedPreferences.map((p) => (
+              <li key={p.id} className="flex items-start justify-between gap-2 rounded-xl border border-black/10 px-3 py-2">
+                <span className="text-sm text-ink/75">{p.insight}</span>
+                <button
+                  onClick={() => handleForgetPreference(p.id)}
+                  aria-label="Olvidar"
+                  title="Olvidar"
+                  className="text-ink/30 hover:text-warn shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       <Button onClick={save} className="w-full md:w-auto">
         <Save className="w-4 h-4" /> {saved ? 'Guardado ✓' : 'Guardar cambios'}
